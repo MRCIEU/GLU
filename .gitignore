@@ -1,0 +1,9 @@
+
+*.csv
+*.tsv
+*.txt
+*.dta
+*.log
+out*
+err*
+
