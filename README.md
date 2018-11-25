@@ -259,7 +259,7 @@ An event is either eating, exercise or medication.
 
 Post-event AUC can be either 1-hour or 2-hour. E.g. 1-hr postprandial AUC, 1-hr post-exercise AUC, 1-hr post-medication AUC etc.
 
-The `n`-hr post-event AUC is the mean of the 3 consecutive SG readings `n` hrs after the event.
+The `n`-hr post-event AUC is the mean of the SG values during the 15 minute period occuring `n` hrs after the event.
 
 
 
