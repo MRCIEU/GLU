@@ -37,6 +37,7 @@ parseArgs <- function() {
 	make_option(c("-s", "--save"), action="store_true", default=FALSE, help="Save derived CGM sequence(s) [default= %default]"),
 	make_option(c("-e", "--freq"), type="integer", default=5, help="CGM epoch data frequency (minutes) [default= %default]", metavar="number"),
 	make_option(c("-t", "--timeformat"), type="character", default='%d/%m/%y %H:%M:%S', help="Time format in the CGM data [default= %default]", metavar="character"),
+	make_option(c("-k", "--outlierthreshold"), type="integer", default=5, help="Value k used for outlier detection threshold d=k*SD [default= %default]", metavar="number"),
 	make_option(c("-p", "--pregnancy"), action="store_true", default=FALSE, help="Data is for pregnancy study, so pregnancy specific statistics should be derived [default= %default]"),
   	make_option(c("-q", "--diabetes"), action="store_true", default=FALSE, help="Data is for diabetes study, so diabetes specific statistics should be derived [default= %default]")
 	)
@@ -94,6 +95,8 @@ parseArgs <- function() {
 
 		###############################
 		# TBC validate time
+
+		opt$daystart <<- strptime(opt$daystart, format='%H:%M')
         }
 
 
@@ -104,7 +107,7 @@ parseArgs <- function() {
 
         }
 	else {
-
+		opt$nightstart <<- strptime(opt$nightstart, format='%H:%M')
               	# TBC validate time
         }
 

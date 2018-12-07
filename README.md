@@ -131,7 +131,7 @@ impute	|	Use simple imputation method (see paper).
 hypothreshold	| Threshold between hypoglycaemia and euglycemia, to overide the defaults
 hyperthreshold	| Threshold between euglycemia and hyperglycaemia, to overide the defaults
 timeformat	| Time format in CGM data. Default='%d/%m/%y %H:%M:%S' (format for Medtronic ipro2 data).
-
+outlierthreshold | Value k used for outlier detection threshold `d=k*SD`.
 
 
 ## 3. Description of GLU QC

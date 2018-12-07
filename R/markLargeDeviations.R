@@ -55,8 +55,9 @@ markLargeDeviations <- function(raw) {
 	##
 	## calculate allowable difference
 
-	allowableJump = 4*sd(sgDiffAfter, na.rm=TRUE)
-	avgDiff = mean(sgDiffAfter, na.rm=TRUE)
+	k = opt$outlierthreshold
+	allowableJump = k*sd(sgDiffAfter, na.rm=TRUE)
+
 
 	##
 	## find jumps larger than allowable
@@ -67,7 +68,8 @@ markLargeDeviations <- function(raw) {
 	devlargeRight = rep(FALSE, nrow(raw))
         devlargeRight[which(abs(sgDiffAfter) > allowableJump)] = TRUE
 
-	idx = which(devlargeLeft==TRUE | devlargeRight==TRUE)
+	idx = which(devlargeLeft==TRUE & devlargeRight==TRUE)
+
 	
 	##
 	## mark large deviations
