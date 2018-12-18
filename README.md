@@ -28,12 +28,13 @@ GLU takes continuous glucose monitoring (CGM) data as input, and derives a set o
 
 ### 1.1 Requirements
 
-This code has been tested with R-3.3.1-ATLAS and requires the packages "optparse" and "ggplot2",
+This code has been tested with R-3.3.1-ATLAS and requires the packages optparse (V1.3.2), ggplot2 (V2.2.1) and data.table (V1.11.4),
 which can be installed by running the following commands in R:
 
 ```R
 install.packages("optparse")
 install.packages("ggplot2")
+install.packages("data.table")
 ```
 
 

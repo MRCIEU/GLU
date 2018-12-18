@@ -36,7 +36,7 @@ plotCGM <- function(validDays, dir, userID) {
 
 
 	library("ggplot2")
-	library("stringr")
+#	library("stringr")
 
 
 	for (vd in validDays) {
@@ -148,7 +148,8 @@ plotCGMTrace <- function(rawV, dir, userID, vd) {
 	## line of each segment on the plot
 	for (i in 1:(groupidx-1)) {
 		segstr=paste("segment",i,sep='')
-		p=p+geom_line(aes_string(y = segstr), size=0.1, colour=segcolx[i])+geom_point(aes_string(y = segstr), size=0.1, shape=3, stroke=0.1)
+		p=p+geom_line(aes_string(y = segstr), size=0.1, colour=segcolx[i])
+		#+geom_point(aes_string(y = segstr), size=0.1, shape=3, stroke=0.1) # show the points
 	}
 
 
