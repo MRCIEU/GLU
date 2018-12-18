@@ -124,7 +124,6 @@ pregnancy	| Set to `TRUE` to use pregnancy thresholds for proportion of time spe
 outDir  | Directory where derived CGM characteristics data files should be stored. Default is `inDir`.
 nightstart	| Time night period starts (HH:MM). Default is 23:00.
 daystart	| Time day period starts (HH:MM). Default is 06:30.
-missingsummary	| Set to `TRUE` to generate a summary of missingness (`missingSummary.csv`).
 save 	|	Set to `TRUE` to save derived (resampled) CGM data.
 freq	|	Frequency between time points in CGM data (minutes). Default is 5 minutes.
 impute	|	Use simple imputation method (see paper).
