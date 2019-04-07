@@ -40,37 +40,17 @@ install.packages("data.table")
 
 ## 2. Running GLU
 
-There are two steps to generate the summary CGM variables:
+GLU supports CGM data from three devices specifically:
 
-1. Preprocess the CGM data files into the appropriate format
-2. QC and deriving summary characteristics
+- Medtronic iPro2
+- Abbott Freestyle libre
+- Dexcom G2
 
+The device should be specified using the `device` argument as described in the 'optional arguments' table below.
 
-### 2.1 Step 1: preprocessing
+### 2.1. Other data formats
 
-
-#### Preprocessing Medtronic iPro2 CGM data
-
-If you are using CGM data from a Medtronic iPro2 device, you can use the following command to preprocess all CGM files in a directory:
-
-```bash
-sh mainConvertFileFormat.sh [dataDir] [outDir] [filename]
-```
-
-The `filename` argument is optional.
-
-This step converts the Medtronic ipro2 data files to the format required by step 2, by:
-
-1. Convert file encoding
-2. Remove header lines
-
-The data files should have the name "data_export-[USERID].[EXTENSION]" (e.g. data_export-1234.tsv), this is the naming convention used when data is exported from Medtronic [here](https://carelink.minimed.eu/ipro/hcp/login.jsf).
-
-
-#### Preprocessing other data formats
-
-If using GLU with CGM data from other devices, you can convert your data to a TSV (tab seperated values) file with the following columns, and then run step 2.
-
+If using GLU with CGM data from other devices, you can convert your data to a CSV (comma seperated values) file with the following columns, and then specify the device as 'other' using the `device` argument.
 
 Required columns:
 
@@ -88,16 +68,11 @@ Meal          | Optional column, which if not blank indicates a meal timepoint.
 Exercise          | Optional column, which if not blank indicates a exercise timepoint.
 Medication          | Optional column, which if not blank indicates a medication timepoint.
 BG Reading (mmol/L)    | Blood glucose levels.
-Excluded	| Whether timepoint should be removed pre-analysis.
 
-See data used in the examples below.
 
-NB: If you are using a common format you can send us some example data and we can add preprocessing for this format to the GLU tool.
+NB: If you are using a common format not currently supported by GLU, you can send us some example data and we can add preprocessing for this format to the GLU tool.
 
-### 2.2 Step 2: QC and deriving characteristics
-
-Perform QC and derive characteristics/graphs for all CGM TSV files in a directory.
-
+### 2.2. Running GLU on the command line
 
 ```bash
 cd R/

@@ -18,30 +18,29 @@
 
 
 
-# Loads one person's data from file.
-# Returns CGM data with the columns: bgReading, sgReading, meal, Exercise, Medication, isigReading, usedInCal, date, time.
+# Loads one person's data from cleaned CGM data file.
+# Input data has columns: bgReading, sgReading, meal, Exercise, Medication, time.
+# Returns list object containing participant ID and 3 data frames: sg, bg and events.
+
 loadData <- function(dir, fileName, userID, timeFormat) {
 
-	rawData <- read.table(paste(dir,fileName,sep=""), sep="\t", header=1)
+	rawData <- read.table(paste(dir,fileName,sep=""), sep=",", header=1)
 
 	## REQUIRED COLUMNS
 	## check it has required fields
 	## and rename them
 
-	colName = "Sensor.Glucose..mmol.L."
+	colName = "sgReading"
         idxSGReading = which(names(rawData) == colName)
         if (length(idxSGReading)==0) {
                 stop(paste("Column missing from input file:", colName),     call.=FALSE)
         }
-	names(rawData)[idxSGReading]="sgReading"
 
-	colName = "Timestamp"
+	colName = "time"
         idxT = which(names(rawData) == colName)
         if (length(idxT)==0) {
                 stop(paste("Column missing from input file:", colName),     call.=FALSE)
         }
-        names(rawData)[idxT]="time"
-#        rawData$time = strptime(rawData$time, format='%d/%m/%y %H:%M:%S')
 	rawData$time = strptime(rawData$time, format=timeFormat)
 
 	if (length(which(!is.na(rawData$time)))==0) {
@@ -50,59 +49,6 @@ loadData <- function(dir, fileName, userID, timeFormat) {
 
 	## OPTIONAL COLUMNS
 	## rename optional columns if they exist
-
-	colName = "Excluded"
-	idxExcluded = which(names(rawData) == colName)
-	if (length(idxExcluded)>0) {
-
-		# if excluded column exists then remove all excluded rows
-		ix = which(rawData[,idxExcluded]!="TRUE")
-		rawData = rawData[ix,]
-        }
-
-	colName = "BG.Reading..mmol.L."
-	idxBGReading = which(names(rawData) == colName) 
-	if (length(idxBGReading)>0) {
-        names(rawData)[idxBGReading]="bgReading"
-	}
-
-	colName = "Used.in.Calibration"
-        idxCal = which(names(rawData) == colName)
-        if (length(idxCal)>0) {
-		names(rawData)[idxCal]="usedInCal"
-
-		# convert usedInCal to binary
-	        rawData$usedInCalBinary = FALSE
-	        rawData$usedInCalBinary[which(rawData$usedInCal=="True")] = TRUE
-	        rawData$usedInCal = rawData$usedInCalBinary
-	        rawData = rawData[, !(names(rawData) == "usedInCalBinary")]
-
-	}
-
-	colName = "Meal"
-        idxT = which(names(rawData) == colName)
-        if (length(idxT)>0) {
-		names(rawData)[idxT]="meal"
-	} else {
-
-		colName = "Meal.Size"
-		idxT = which(names(rawData) == colName)
-	        if (length(idxT)>0) {
-			names(rawData)[idxT]="meal"
-        	}
-	}
-	
-	colName = "Exercise"
-        idxT = which(names(rawData) == colName)
-        if (length(idxT)>0) {
-		names(rawData)[idxT]="Exercise"
-	} else {
-                colName = "Exercise.Level"
-                idxT = which(names(rawData) == colName)
-                if (length(idxT)>0) {
-			names(rawData)[idxT]="Exercise"
-                }
-        }
 
 
 	## CREATE OUR DATA OBJECT
@@ -165,6 +111,8 @@ loadData <- function(dir, fileName, userID, timeFormat) {
                 	}
 		}
         }
+
+	events = events[,c('time', 'event')]
 
 	participantData = list(id=userID, sg=sgReadings, bg=bgReadings, events=events)
 

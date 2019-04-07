@@ -39,12 +39,30 @@ parseArgs <- function() {
 	make_option(c("-t", "--timeformat"), type="character", default='%d/%m/%y %H:%M:%S', help="Time format in the CGM data [default= %default]", metavar="character"),
 	make_option(c("-k", "--outlierthreshold"), type="integer", default=5, help="Value k used for outlier detection threshold d=k*SD [default= %default]", metavar="number"),
 	make_option(c("-p", "--pregnancy"), action="store_true", default=FALSE, help="Data is for pregnancy study, so pregnancy specific statistics should be derived [default= %default]"),
-  	make_option(c("-q", "--diabetes"), action="store_true", default=FALSE, help="Data is for diabetes study, so diabetes specific statistics should be derived [default= %default]")
+  	make_option(c("-q", "--diabetes"), action="store_true", default=FALSE, help="Data is for diabetes study, so diabetes specific statistics should be derived [default= %default]"),
+	make_option(c("-b", "--device"), type="integer", default=0, help="CGM device used. 0: medtronic ipro2, 1: dexcom G2, 2: Abbott freestyle libre, 3: other device (data provided in generic format). [default= %default]")
 	)
 
 
 	opt_parser = OptionParser(option_list=option_list)
 	opt<<- parse_args(opt_parser)
+
+	if (opt$device<0 | opt$device>3) {
+		stop("Device index must be 0 (medtronic ipro2), 1 (Dexcom g2), 2: (Abbott freestyle libre), or 3 (other device, generic format).")
+	}
+
+	if (opt$device == 0) {
+		print("Processing data from Medtronic iPro2 device.")
+	}
+	else if (opt$device == 1) {
+		print("Processing data from Dexcom g2 device.")
+	}
+	else if	(opt$device == 2) {
+                print("Processing data from Abbott freestyle libre device.")
+        }
+	else if (opt$device == 3) {
+                print("Other device. Checking data in generic format.")
+        }
 
 
         if (is.null(opt$indir)){

@@ -64,8 +64,17 @@ for (f in files) {
         userIDdf = rbind(userIDdf)
         colnames(userIDdf) = c("userID")
 
-	# load data
-	raw <- loadData(opt$indir, f, userID, opt$timeformat)
+
+	######
+	###### convert file format depending on device type
+
+	convertFileFormat(opt$indir, opt$outdir, f)
+
+
+	#####
+	##### load data
+
+	raw <- loadData(opt$outdir, f, userID, opt$timeformat)
 
 	if (nrow(raw[["sg"]]) == 0) {
 		print("No SG readings")
