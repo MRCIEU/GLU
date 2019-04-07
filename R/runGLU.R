@@ -62,7 +62,7 @@ for (f in files) {
         userID <<- getUserIDFromFileName(f)
         userIDdf = c(userID)
         userIDdf = rbind(userIDdf)
-        colnames(userIDdf) = c("userID")
+        colnames(userIDdf) = c("ID")
 
 
 	######
@@ -166,7 +166,7 @@ if (exists("summaryVariables")==TRUE) {
 	print("Saving results to file ...")
 
 	# overall summaries
-	summaryVariablesBrief = summaryVariables[,c("userID", "numValidDays", "meanmadPerDay", "meanProportionLowPerDay", "meanProportionNormalPerDay", "meanProportionHighPerDay", "meanAUCperDay", "meanSGVPPerDay", "meanFastingProxyPerDay", "hasInvalidDeviations")]
+	summaryVariablesBrief = summaryVariables[,c("ID", "numValidDays", "meanmadPerDay", "meanProportionLowPerDay", "meanProportionNormalPerDay", "meanProportionHighPerDay", "meanAUCperDay", "meanSGVPPerDay", "meanFastingProxyPerDay", "hasInvalidDeviations")]
 	write.table(summaryVariablesBrief, file=paste(opt$outdir, "cgmSummary", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE)
 
 	# verbose version with summaries per day
