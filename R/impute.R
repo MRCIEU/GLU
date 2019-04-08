@@ -32,6 +32,7 @@ impute <- function(day) {
 
 	# we can't impute days with no nighttime - too much missingness
 	if (is.null(nt)) {
+		print('No nighttime, so cannot impute.')
 		return(day)
 	}
 

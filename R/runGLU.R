@@ -38,7 +38,7 @@ parseArgs()
 if (!is.null(opt$filename)) {
 	files=c(opt$filename)
 } else {
-	files = list.files(opt$indir, pattern="data_export-.*\\..*")
+	files = list.files(opt$indir, pattern=".*\\..*")
 }
 
 # prefix for derived data file
@@ -49,6 +49,12 @@ namePrefix = derivedFilePrefix(opt$filename, opt$impute)
 #sink(missingfile)
 #sink()
 
+
+# refresh impute logging file
+if (opt$impute == TRUE) {
+	sink(paste0(opt$outdir, 'logging-impute.txt'))
+	sink()
+}
 
 first=TRUE
 
@@ -95,7 +101,12 @@ for (f in files) {
 #	writeMissingSummaryByDay(alldays, opt$impute, userID)
 
 	if (opt$impute == TRUE) {
+		print('imputing missing timepoints ...')
+		
+		sink(paste0(opt$outdir, 'logging-impute.txt'), append=TRUE)
+		print(paste0('*********** IMPUTING ', userID, ' ***********'))
 		alldays = imputeByDay(alldays)
+		sink()
 	}
 
 	validDays = getValidDays(alldays)
@@ -107,6 +118,8 @@ for (f in files) {
 		print(paste("No valid days for userID:", userID))
 		next
 	}
+	
+	print(paste0("Number of valid days: ", numValidDays))
 
 #	plotCGM(alldays, opt$outdir, userID)
 
