@@ -56,18 +56,18 @@ Required columns:
 
 Column | Description
 -------|--------
-Timestamp          | Required in format 'dd/mm/yy HH:MM:SS'.
-Sensor Glucose (mmol/L)          | Sensor glucose levels.
+time          | Required in format 'dd/mm/yy HH:MM:SS'.
+sgReading     | Sensor glucose levels.
 
 
 Optional columns:
 
 Column | Description
 -------|--------
-Meal          | Optional column, which if not blank indicates a meal timepoint.
-Exercise          | Optional column, which if not blank indicates a exercise timepoint.
-Medication          | Optional column, which if not blank indicates a medication timepoint.
-BG Reading (mmol/L)    | Blood glucose levels.
+meal         | Optional column, which if not blank indicates a meal timepoint.
+exercise     | Optional column, which if not blank indicates a exercise timepoint.
+medication   | Optional column, which if not blank indicates a medication timepoint.
+bgReading    | Blood glucose levels.
 
 
 NB: If you are using a common format not currently supported by GLU, you can send us some example data and we can add preprocessing for this format to the GLU tool.
@@ -107,7 +107,7 @@ hypothreshold	| Threshold between hypoglycaemia and euglycemia, to overide the d
 hyperthreshold	| Threshold between euglycemia and hyperglycaemia, to overide the defaults
 timeformat	| Time format in CGM data. Default='%d/%m/%y %H:%M:%S' (format for Medtronic ipro2 data).
 outlierthreshold | Value k used for outlier detection threshold `d=k*SD`.
-
+device	| Medtronic iPro2=0; Dexcom G2=1; Abbott Freestyle Libre=2; other(general format as above)=3.
 
 ## 3. Description of GLU QC
 
