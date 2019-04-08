@@ -121,16 +121,14 @@ parseArgs <- function() {
 	if (is.null(opt$nightstart)){
 		opt$nightstart <<- '23:00' # 23:00
                 opt$nightstart <<- strptime(opt$nightstart, format='%H:%M')
-		print(opt$nightstart)
-
         }
 	else {
 		opt$nightstart <<- strptime(opt$nightstart, format='%H:%M')
               	# TBC validate time
         }
 
-	print(paste("Night start:", opt$nightstart))
-        print(paste("Day start:", opt$daystart))
+	print(paste0("Night start: ", format(opt$nightstart, '%H:%M')))
+	print(paste0("Day start: ", format(opt$daystart, '%H:%M')))
 
 
 
