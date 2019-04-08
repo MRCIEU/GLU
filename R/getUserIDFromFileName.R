@@ -27,7 +27,7 @@ getUserIDFromFileName <- function(f) {
 
 	# if not medtronic format then use file name as the participant ID
 	if (is.na(userID)) {
-		userID = f
+		userID = sub('\\..*$', '', f) 
 	}
 
         return(userID)
