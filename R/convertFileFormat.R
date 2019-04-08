@@ -46,8 +46,6 @@ convertFileMedtronic <- function(inFile, outFile, filename) {
 	# read lines using correct encoding
 	lines = readLines(inFile, encoding="utf-16", skipNul = TRUE)
 
-	print(length(lines))
-
 	# remove header lines and quotes
 	lines = lines[12:length(lines)]
 	lines = gsub("\"", "", lines)
