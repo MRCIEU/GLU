@@ -20,15 +20,15 @@
 
 ## UNUSED
 
-writeMissingSummaryByDay <- function(alldays, impute, userID) {
+writeMissingSummaryByDay <- function(alldays, impute, userID, filename, outdir) {
 
         for (d in alldays) {
-		writeMissingSummary(d, impute, userID)
+		writeMissingSummary(d, impute, userID, filename, outdir)
 	}
 }
 
 
-writeMissingSummary <- function(day, impute, userID) {
+writeMissingSummary <- function(day, impute, userID, filename, outdir) {
 
         nt = day[["nighttime"]]
         dt = day[["daytime"]]
@@ -52,13 +52,13 @@ writeMissingSummary <- function(day, impute, userID) {
 	numNotNA = length(which(!is.na(daySeq$sgReading)))
 
 namePrefix = ""
-if (!is.null(opt$filename)) {
+if (!is.null(filename)) {
         namePrefix = paste('-', userID, sep='')
 }
-if (opt$impute==TRUE) {
+if (impute==TRUE) {
 namePrefix = paste(namePrefix, '-imputed', sep='')
 }
-missingfile=paste(opt$outdir,"missingSummary",namePrefix,".csv", sep="")
+missingfile=paste(outdir,"missingSummary",namePrefix,".csv", sep="")
 
         write(paste(userID, day[["validday"]], length(daySeq$sgReading), numNotNA, timediff, day[["daystart"]], day[["dayend"]], proportionComplete, sep=","), file=missingfile, append=TRUE)
 

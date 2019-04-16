@@ -21,7 +21,10 @@
 addSource <- function() {
 
         source("parseArgs.R")
+	source("validateOptions.R")
 	source("convertFileFormat.R")
+	source("runGLUForDirectory.R")
+	source("runGLUForFiles.R")
 
 	source("derivedFilePrefix.R")
 	source("loadData.R")

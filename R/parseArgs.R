@@ -21,7 +21,7 @@
 # process arguments supplied to GLU by the user.
 parseArgs <- function() {
 
-	#install.packages("optparse");
+	#install.packages("optparse")
 	library("optparse")
 
 	option_list = list(
@@ -45,124 +45,7 @@ parseArgs <- function() {
 
 
 	opt_parser = OptionParser(option_list=option_list)
-	opt<<- parse_args(opt_parser)
+	opt =  parse_args(opt_parser)
 
-	if (opt$device<0 | opt$device>3) {
-		stop("Device index must be 0 (medtronic ipro2), 1 (Dexcom g2), 2: (Abbott freestyle libre), or 3 (other device, generic format).")
-	}
-
-	if (opt$device == 0) {
-		print("Processing data from Medtronic iPro2 device.")
-	}
-	else if (opt$device == 1) {
-		print("Processing data from Dexcom g2 device.")
-	}
-	else if	(opt$device == 2) {
-                print("Processing data from Abbott freestyle libre device.")
-        }
-	else if (opt$device == 3) {
-                print("Other device. Checking data in generic format.")
-        }
-
-
-        if (is.null(opt$indir)){
-                print_help(opt_parser)
-                stop("indirectory argument must be supplied", call.=FALSE)
-        }
-	else if (!file.exists(opt$indir)) {
-                stop(paste("Input data directory indirectory=", opt$indir, " does not exist", sep=""), call.=FALSE)
-        }
-
-	if (is.null(opt$outdir)){
-                opt$outdir <<- opt$indir
-        }
-	else if (!file.exists(opt$outdir)) {
-                stop(paste("Output data directory outdir=", opt$outdir, " does not exist", sep=""), call.=FALSE)
-        }
-
-	validDaysDir = file.path(opt$outdir, "validdays/")
-        if (!file.exists(validDaysDir)) {
-
-                # make valid days subdirectory if it doesn't exist
-
-                dir.create(validDaysDir)
-        }
-
-	if (!is.null(opt$filename)){
-                if (!file.exists(paste(opt$indir, opt$filename, sep=""))) {
-                        stop(paste("Input file filename=", opt$indirectory, " in directory ", opt$indir, "does not exist", sep=""), call.=FALSE)
-                }
-        }
-
-	if (opt$pregnancy == TRUE) {
-                print("Generating statistics for pregnancy study")
-        }
-
-#	if (opt$missingsummary == TRUE)	{
-#		print("Generating missing data summary")
-#		write("cgmID, validDay, length, daystart, dayend, numSG, numISIG, eventSummary", file=paste(opt$outdir,"missingSummary.csv", sep=""), append=FALSE)
-#	}
-
-
-
-	if (is.null(opt$daystart)){
-		opt$daystart <<- '06:30'
-		opt$daystart <<- strptime(opt$daystart, format='%H:%M')
-        }
-	else {
-
-		###############################
-		# TBC validate time
-
-		opt$daystart <<- strptime(opt$daystart, format='%H:%M')
-        }
-
-
-	if (is.null(opt$nightstart)){
-		opt$nightstart <<- '23:00' # 23:00
-                opt$nightstart <<- strptime(opt$nightstart, format='%H:%M')
-        }
-	else {
-		opt$nightstart <<- strptime(opt$nightstart, format='%H:%M')
-              	# TBC validate time
-        }
-
-	print(paste0("Night start: ", format(opt$nightstart, '%H:%M')))
-	print(paste0("Day start: ", format(opt$daystart, '%H:%M')))
-
-
-
-	# both thresholds need to be set or neither
-	if ((is.null(opt$hypothreshold) & !is.null(opt$hyperthreshold)) | (is.null(opt$hyperthreshold) & !is.null(opt$hypothreshold))) {
-		stop("Both hypo and hyper thresholds need to be set (or neither)", call.=FALSE)
-	}
-	else if (is.null(opt$hypothreshold) & is.null(opt$hyperthreshold)) {
-
-		# default settings for low and high thresholds
-
-		if (opt$pregnancy == TRUE) {
-			opt$hypothreshold <<- 3.9
-			opt$hyperthreshold <<- 7.8
-			print(paste("Using pregnancy hypo-glycaemia threshold: ", opt$hypothreshold, sep=""))
-	                print(paste("Using pregnancy hyper-glycaemia threshold: ", opt$hyperthreshold, sep=""))
-		}
-		else if (opt$diabetes == TRUE) {
-			opt$hypothreshold <<- 3.9
-                        opt$hyperthreshold <<- 10.0
-			print(paste("Using diabetes hypo-glycaemia threshold: ", opt$hypothreshold, sep=""))
-                        print(paste("Using diabetes hyper-glycaemia threshold: ", opt$hyperthreshold, sep=""))
-		}
-		else {
-			opt$hypothreshold <<- 3.3
-                        opt$hyperthreshold <<- 10.0
-			print(paste("Using default hypo-glycaemia threshold: ", opt$hypothreshold, sep=""))
-                        print(paste("Using default hyper-glycaemia threshold: ", opt$hyperthreshold, sep=""))
-		}
-	}
-	else {
-		print(paste("Using hypo-glycaemia threshold: ", opt$hypothreshold, sep=""))
-		print(paste("Using hyper-glycaemia threshold: ", opt$hyperthreshold, sep=""))
-
-	}
-
+	return(opt)
 }

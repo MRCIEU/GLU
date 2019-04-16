@@ -20,9 +20,9 @@
 
 # Saves cleaned CGM data to file.
 # This includes the interpolated timepoints that mark the precise start and end of each day
-saveCleanData <- function(validDays, outdir, userID, impute) {
+saveCleanData <- function(validDays, outdir, userID, impute, save=TRUE) {
 
-	if (opt$save == TRUE) {
+	if (save == TRUE) {
 
 	print("Saving clean data ...")
 

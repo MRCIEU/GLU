@@ -19,7 +19,7 @@
 
 
 # For each day mark large deviations
-markLargeDeviationsByDay <- function(days) {
+markLargeDeviationsByDay <- function(days, outlierthreshold=5) {
 
 
 	alldaysMarked = list()
@@ -29,7 +29,7 @@ markLargeDeviationsByDay <- function(days) {
 	for (vd in days) {
 
 		raw = collateSequence(vd)
-		raw = markLargeDeviations(raw)
+		raw = markLargeDeviations(raw, outlierthreshold)
 
 		# split back into night- and day-time
 		numrowsNT = nrow(vd[["nighttime"]])		

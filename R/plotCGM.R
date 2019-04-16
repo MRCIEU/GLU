@@ -22,7 +22,7 @@
 # 1. Histogram of SG values.
 # 2. Poincare plot (showing how values vary from one timepoint to the next.
 # 3. Time-series plots of each days sequence (anotated with events and BG readings)
-plotCGM <- function(validDays, dir, userID) {
+plotCGM <- function(validDays, dir, userID, hypothreshold, hyperthreshold) {
 	options(warn=1)
 	print("Plotting ...")
 
@@ -73,7 +73,7 @@ plotCGM <- function(validDays, dir, userID) {
 		## time-series CGM plot
 		#############
 
-		plotCGMTrace(rawV, dir, userID, vd)
+		plotCGMTrace(rawV, dir, userID, vd, hypothreshold, hyperthreshold)
 
 	}
 
@@ -99,7 +99,7 @@ plotPoincare <- function(rawV, dir, userID) {
 
 }
 
-plotCGMTrace <- function(rawV, dir, userID, vd) {
+plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 
 	# plot each segment so that imputed and non-imputed segments are color coded
 	groupidx=1
@@ -143,7 +143,7 @@ plotCGMTrace <- function(rawV, dir, userID, vd) {
 	p=ggplot(rawV, aes(x=time))
 
 	## add coloured band to background indicating normal range
-        p=p+ geom_rect(ymin = opt$hypothreshold, ymax = opt$hyperthreshold, xmin = -Inf, xmax = Inf, fill = '#BBFFBB')
+        p=p+ geom_rect(ymin = hypothreshold, ymax = hyperthreshold, xmin = -Inf, xmax = Inf, fill = '#BBFFBB')
 
 	## line of each segment on the plot
 	for (i in 1:(groupidx-1)) {

@@ -19,7 +19,7 @@
 
 
 # CGM values are marked as large if they are >k from the previous or subsequent values, where k is 4xSD of the distribution of differences between adjacent points.
-markLargeDeviations <- function(raw) {
+markLargeDeviations <- function(raw, outlierthreshold=5) {
 
 	if (is.null(raw)) {
 		return(NULL)
@@ -55,7 +55,7 @@ markLargeDeviations <- function(raw) {
 	##
 	## calculate allowable difference
 
-	k = opt$outlierthreshold
+	k = outlierthreshold
 	allowableJump = k*sd(sgDiffAfter, na.rm=TRUE)
 
 

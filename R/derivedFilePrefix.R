@@ -21,16 +21,13 @@
 # if running GLU for a specific file then includes user ID.
 # if running GLU with impute option then includes 'imputed'
 # E.g. '-1234-imputed'
-derivedFilePrefix <- function(filename, imputeFlag) {
+derivedFilePrefix <- function(impute) {
 
 	# set name prefix for derived data file
 	namePrefix = ""
-	if (!is.null(filename)) {
-	        userID <<- getUserIDFromFileName(filename)
-	        namePrefix = paste('-', userID, sep='')
-	}
-	if (imputeFlag==TRUE) {
-		namePrefix = paste(namePrefix, '-imputed', sep='')
+
+	if (impute==TRUE) {
+	namePrefix = paste(namePrefix, '-imputed', sep='')
 	}
 
 	return(namePrefix)

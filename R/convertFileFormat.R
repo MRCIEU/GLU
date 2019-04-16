@@ -18,23 +18,23 @@
 
 
 # preprocessing for three specific CGM data formats from: Medtronic ipro2, Dexcom G2, and Abbott Freestyle Libre
-convertFileFormat <- function(dirIn, dirOut, filename) {
+convertFileFormat <- function(dirIn, filename, dirOut, device=0) {
 
 	print("converting file format ...")
 
 	inFile = paste0(dirIn, '/', filename)
-	   outFile = paste0(dirOut, '/', filename)
+	outFile = paste0(dirOut, '/', filename)
 
-	if (opt$device == 0) {
+	if (device == 0) {
 		convertFileMedtronic(inFile, outFile, filename)
 	   }
-	else if (opt$device == 1) {
+	else if (device == 1) {
 		convertFileDexcom(inFile, outFile, filename)
 	   }
-	else if (opt$device == 2) {
+	else if (device == 2) {
 		convertFileAbbotFreestyleLibre(inFile, outFile, filename)
 	   }
-	else if (opt$device == 3) {
+	else if (device == 3) {
 		## already in correct format
 	   }
 
@@ -207,7 +207,7 @@ checkAndRename <- function(oldname, newname, data) {
 	
 	ixT = which(colnames(data) == oldname)
 	if (length(ixT)==0) {
-		stop(paste("Column missing from input file:", colName),	call.=FALSE)
+		stop(paste("Column missing from input file:", oldname), call.=FALSE)
 	}
 	colnames(data)[ixT] = newname
 

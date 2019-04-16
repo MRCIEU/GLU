@@ -20,7 +20,7 @@
 
 # Derives variables that describe characteristics of the SG sequence.
 # Returns a data frame containing these characteristics values.
-deriveCharacteristics <- function(validDays, userIDdf) {
+deriveCharacteristics <- function(validDays, userIDdf, hypothreshold, hyperthreshold) {
 
 	print('MAD')
 	# Median absolute deviation for each day
@@ -35,7 +35,7 @@ deriveCharacteristics <- function(validDays, userIDdf) {
 
 	print('Time proportions')
         # Proportion of time spent in low, medium and high glucose ranges, on each complete day
-        proportions = timeProportionsByDay(validDays, opt$hypothreshold, opt$hyperthreshold)
+        proportions = timeProportionsByDay(validDays, hypothreshold, hyperthreshold)
 
 	print('sGVP')
         # SGVP, on each complete day

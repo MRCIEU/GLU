@@ -17,38 +17,12 @@
 # DEALINGS IN THE SOFTWARE.
 
 
-library("ggplot2")
-#library("stringr")
-#library(data.table)
+runGLUForDirectory <- function(indir, outdir=NULL, device=0, daystart='HH:MM', nightstart='HH:MM', timeformat='%d/%m/%y %H:%M:%S', impute=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
 
 
-####
-#### This is the main script used to run the GLU tool
+	files = list.files(indir, pattern=".*\\..*", full.names=FALSE)
 
-options(warn=2)
+	runGLUForFiles(files, indir, outdir, device, daystart, nightstart, timeformat, impute, freq, outlierthreshold, hypothreshold, hyperthreshold, save, pregnancy, diabetes)
 
-source("addSource.R")
-addSource()
-
-
-# parse arguments - directory is required, if filename is not specified then all files in directory are processed
-opt = parseArgs()
-
-# if user specifies a filename then process this, otherwise process all other files in indir
-if (!is.null(opt$filename)) {
-
-	fullfilename=paste0(opt$indir, opt$filename)
-
-	if (!file.exists(fullfilename)) {
-		stop(paste0('File ', fullfilename, ' does not exist'))
-	}
-	files=c(opt$filename)
-
-} else {
-	files = list.files(opt$indir, pattern=".*\\..*", full.names=FALSE)
 }
-
-runGLUForFiles(files, opt$indir, opt$outdir, opt$device, opt$daystart, opt$nightstart, opt$timeformat, opt$impute, opt$freq, opt$outlierthreshold, opt$hypothreshold, opt$hyperthreshold, opt$save, opt$pregnancy, opt$diabetes)
-
-
 
