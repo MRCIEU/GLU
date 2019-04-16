@@ -101,7 +101,7 @@ print(hypothreshold)
         }
 	else {
 		nightstart = strptime(nightstart, format='%H:%M')
-              	# TBC validate time
+		# TBC validate time
         }
 
 	print(paste0("Night start: ", format(nightstart, '%H:%M')))

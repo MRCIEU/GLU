@@ -121,7 +121,6 @@ for (f in files) {
 	######
 	###### PLOTTING
 
-	print(hypothreshold)
 	plotCGM(validDays, outdir, userID, hypothreshold, hyperthreshold)
 
 
@@ -141,7 +140,7 @@ for (f in files) {
                 first=FALSE
         }
 	else {
-              	# we use merge rather than rbind because users have different columns depending on how many valid days they have
+		# we use merge rather than rbind because users have different columns depending on how many valid days they have
                 summaryVariables = merge(summaryVariables,summThis, all=TRUE)
         }
 
