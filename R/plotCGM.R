@@ -47,7 +47,7 @@ plotCGM <- function(validDays, dir, userID, hypothreshold, hyperthreshold) {
 		## plot histogram
 		#############
 	
-		pdf(paste(dir, 'plots/cgm-hist-',userID,'.pdf', sep=""))
+		pdf(paste(dir, '/plots/cgm-hist-',userID,'.pdf', sep=""))
 		hist(rawV$sgReading, breaks=10, xlab="Sensor glucose", ylab="Number of readings", main=NULL)
 		dev.off()
 
