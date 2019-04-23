@@ -50,7 +50,7 @@ saveCleanData <- function(validDays, outdir, userID, impute, save=TRUE) {
         }
 
         # save clean data
-        write.table(rawValid, file=paste(outdir, "validdays/cgmValidDays", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE, na="")
+        write.table(rawValid, file=paste(outdir, "/validdays/cgmValidDays", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE, na="")
 
 	}
 

@@ -58,7 +58,7 @@ if (!is.null(filename)) {
 if (impute==TRUE) {
 namePrefix = paste(namePrefix, '-imputed', sep='')
 }
-missingfile=paste(outdir,"missingSummary",namePrefix,".csv", sep="")
+missingfile=paste(outdir,"/missingSummary",namePrefix,".csv", sep="")
 
         write(paste(userID, day[["validday"]], length(daySeq$sgReading), numNotNA, timediff, day[["daystart"]], day[["dayend"]], proportionComplete, sep=","), file=missingfile, append=TRUE)
 

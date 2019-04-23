@@ -28,7 +28,7 @@ plotCGM <- function(validDays, dir, userID, hypothreshold, hyperthreshold) {
 
 
 	# create plots dir if it doesn't exist
-	plotsdir = paste(dir, 'plots/',sep='')
+	plotsdir = paste(dir, '/plots/',sep='')
 	if (!file.exists(plotsdir)) {
 		print(paste('Plot directory created:', plotsdir))
 		dir.create(plotsdir)
@@ -92,7 +92,7 @@ plotPoincare <- function(rawV, dir, userID) {
                 yaxis = yaxis[-ix]
         }
 
-	pdf(paste(dir, 'plots/poincare-',userID,'.pdf', sep=""))
+	pdf(paste(dir, '/plots/poincare-',userID,'.pdf', sep=""))
         plot(xaxis, yaxis, type='p', pch='+',xlim=c(3,7), ylim=c(3,7), xlab="SG(t)", ylab="SG(t+1)", col = rgb(red = 0, green = 0, blue = 1, alpha = 0.5))
         lines(c(2,9),c(2,9), type='l')
         dev.off()
@@ -230,7 +230,7 @@ plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 	p=p+scale_y_continuous(limits = c(minY, maxY))
 
 
-	ggsave(plot=p, file=paste(dir, 'plots/cgm-day',vd$dayidx,'-',userID,'.pdf', sep=""), device="pdf", width=7,height=3)
+	ggsave(plot=p, file=paste(dir, '/plots/cgm-day',vd$dayidx,'-',userID,'.pdf', sep=""), device="pdf", width=7,height=3)
 
 
 }
