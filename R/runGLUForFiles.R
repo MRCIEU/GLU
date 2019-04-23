@@ -25,7 +25,7 @@
 #' @param device Device type: 0 (medtronic ipro2); 1 (Dexcom G2); 2 (Abbott Freestyle Libre), default 0.
 #' @param daystart Time of night to day transition in format HH:MM, default 06:30.
 #' @param nightstart Time of day to night transition in format HH:MM, default 23:00.
-#' @param timeformat Time format in the CGM data, default %d/%m/%y %H:%M:%S.
+#' @param timeformat Time format in the CGM data, default \%d/\%m/\%y \%H:\%M:\%S.
 #' @param impute Logical. If TRUE then the 'approximal imputation' approach to dealing with missing data is used. If FALSE then the 'complete days' approach is used. 
 #' @param freq Integer. CGM epoch data frequency (minutes).
 #' @param outlierthreshold Numeric. The value k used for outlier detection threshold d=k*SD.

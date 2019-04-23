@@ -21,7 +21,7 @@ runGLUForDirectory(indir, outdir = NULL, device = 0,
 
 \item{nightstart}{Time of day to night transition in format HH:MM, default 23:00.}
 
-\item{timeformat}{Time format in the CGM data, default %d/%m/%y %H:%M:%S.}
+\item{timeformat}{Time format in the CGM data, default \%d/\%m/\%y \%H:\%M:\%S.}
 
 \item{impute}{Logical. If TRUE then the 'approximal imputation' approach to dealing with missing data is used. If FALSE then the 'complete days' approach is used.}
 
