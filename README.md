@@ -26,29 +26,86 @@ GLU takes continuous glucose monitoring (CGM) data as input, and derives a set o
     2. 2-hour postprandial AUC
 
 
-### 1.1 Requirements
-
-This code has been tested with R-3.3.1-ATLAS and requires the packages optparse (V1.3.2), ggplot2 (V2.2.1) and data.table (V1.11.4),
-which can be installed by running the following commands in R:
-
-```R
-install.packages("optparse")
-install.packages("ggplot2")
-install.packages("data.table")
-```
-
-
-## 2. Running GLU
-
 GLU supports CGM data from three devices specifically:
 
 - Medtronic iPro2
 - Abbott Freestyle libre
 - Dexcom G2
+- A device non-specific generic format (see below)
 
-The device should be specified using the `device` argument as described in the 'optional arguments' table below.
 
-### 2.1. Other data formats
+## 2. License
+
+This project is licensed under The MIT License.
+
+## 3. Installing GLU
+
+The package can be installed within R directly from GitHub. 
+To do this you will need `devtools`:
+
+```
+install.packages('devtools')
+```
+
+After installing `devtools` you will be able to install GLU:
+
+```
+library(devtools)
+install_github("MRCIEU/GLU")
+```
+
+To update GLU to the latest version, rerun the `install_github` command.
+
+
+## 4. Running GLU within R
+
+The main function in GLU is called `runGLUForFiles`. It takes two compulsory arguments `files` and `indir`, and there are a number of optional arguments, as now described.
+
+
+Arg | Description
+-------|--------
+indir   | Directory where processed CGM data files (i.e. output from step 1) are stored.
+files	| List of file names to be processed by GLU, where these files reside in the indir directory.
+
+#### Optional arguments
+
+Arg | Description
+-------|--------
+pregnancy       | Set to `TRUE` to use pregnancy thresholds for proportion of time spent in low, normal and high characteristics.
+outdir  | Directory where derived CGM characteristics data files should be stored. Default is `inDir`.
+nightstart      | Time night period starts (HH:MM). Default is 23:00.
+daystart        | Time day period starts (HH:MM). Default is 06:30.
+save    |       Set to `TRUE` to save derived (resampled) CGM data.
+freq    |       Frequency between time points in CGM data (minutes). Default is 5 minutes.
+impute  |       Use simple imputation method (see paper).
+hypothreshold   | Threshold between hypoglycaemia and euglycemia, to overide the defaults
+hyperthreshold  | Threshold between euglycemia and hyperglycaemia, to overide the defaults
+timeformat      | Time format in CGM data. Default='%d/%m/%y %H:%M:%S' (format for Medtronic ipro2 data).
+outlierthreshold | Value k used for outlier detection threshold `d=k*SD`.
+device  | Medtronic iPro2=0; Dexcom G2=1; Abbott Freestyle Libre=2; other(general format as above)=3.
+
+
+For example, to run GLU for all files in a directory, where the CGM data is from Abbott Freestyle Libre, that records glucose values every 15 minutes, we can you a command like this one:
+
+```
+library('GLU')
+runGLUForDirectory(indir='/path/to/in/dir/', outdir='/path/to/out/dir', device=2, freq=15)
+```
+
+To then use approximal imputation rather than the 'complete days' approach, we can add the `impute` argument:
+
+```
+library('GLU')
+runGLUForDirectory(indir='/path/to/in/dir/', outdir='/path/to/out/dir', device=2, freq=15, impute=TRUE)
+```
+
+If you would like to run GLU for all files in a directory then use the `runGLUForDirectory`. The arguments are the same as above but without the `files` arguments.
+
+Example commands that run GLU on example data are provided in Section 7 below.
+
+
+
+## 5. Generic data format
 
 If using GLU with CGM data from other devices, you can convert your data to a CSV (comma seperated values) file with the following columns, and then specify the device as 'other' using the `device` argument.
 
@@ -72,44 +129,8 @@ bgReading    | Blood glucose levels.
 
 NB: If you are using a common format not currently supported by GLU, you can send us some example data and we can add preprocessing for this format to the GLU tool.
 
-### 2.2. Running GLU on the command line
 
-```bash
-cd R/
-Rscript runGLU.R \
---indir="<indir>" \
---outdir="<outdir>" \
---filename="<filename>" \
---pregnancy
-```
-
-The `filename`, `outdir` and `pregnancy` arguments are optional.
-
-#### Required arguments
-
-Arg | Description
--------|--------
-inDir   | Directory where processed CGM data files (i.e. output from step 1) are stored.
-
-#### Optional arguments
-
-Arg | Description
--------|--------
-filename          | Run GLU for 1 participants, with user ID `userID'.
-pregnancy	| Set to `TRUE` to use pregnancy thresholds for proportion of time spent in low, normal and high characteristics.
-outDir  | Directory where derived CGM characteristics data files should be stored. Default is `inDir`.
-nightstart	| Time night period starts (HH:MM). Default is 23:00.
-daystart	| Time day period starts (HH:MM). Default is 06:30.
-save 	|	Set to `TRUE` to save derived (resampled) CGM data.
-freq	|	Frequency between time points in CGM data (minutes). Default is 5 minutes.
-impute	|	Use simple imputation method (see paper).
-hypothreshold	| Threshold between hypoglycaemia and euglycemia, to overide the defaults
-hyperthreshold	| Threshold between euglycemia and hyperglycaemia, to overide the defaults
-timeformat	| Time format in CGM data. Default='%d/%m/%y %H:%M:%S' (format for Medtronic ipro2 data).
-outlierthreshold | Value k used for outlier detection threshold `d=k*SD`.
-device	| Medtronic iPro2=0; Dexcom G2=1; Abbott Freestyle Libre=2; other(general format as above)=3.
-
-## 3. Description of GLU QC
+## 6. Description of GLU QC
 
 We remove all rows without either a sensor glucose value or an event (meal/exercise/medication). We resample to 1 minute epochs.
 
@@ -239,7 +260,63 @@ The `n`-hr post-event AUC is the mean of the SG values during the 15 minute peri
 
 
 
-## 5. Example CGM data and derived variables
+## 7. Example CGM data
 
-The `examples` directory contains an example for CGM data of two people.
+To try the tool with example data use the following commands.
 
+### Running GLU within R
+
+#### Medtronic iPro2 data
+
+Run GLU for all files in a directory:
+
+```
+library('GLU')
+datadir=system.file("extdata", package = "GLU")
+runGLUForDirectory(indir=paste0(datadir,'/medtronic-ipro2/original/'), outdir=paste0(datadir,'/medtronic-ipro2/derived/'))
+```
+
+Run GLU for a specific file by specifying this file:
+
+```
+library('GLU')
+datadir=system.file("extdata", package = "GLU")
+runGLUForFiles(files='data_export-999998.csv', indir=paste0(datadir,'/medtronic-ipro2/original/'), outdir=paste0(datadir,'/medtronic-ipro2/derived/'))
+```
+
+#### Abbott Freestyle Libre
+
+```
+library('GLU')
+datadir=system.file("extdata", package = "GLU")
+runGLUForDirectory(indir=paste0(datadir, paste0(datadir,'/freestyle-libre/original/'), outdir=paste0(datadir,'/freestyle-libre/derived/'), device=2, impute=TRUE, freq=15, nightstart='00:00')
+```
+
+#### Dexcom g6
+
+```
+library('GLU')
+datadir=system.file("extdata", package = "GLU")
+runGLUForDirectory(indir=paste0(datadir,'/dexcom-g6/original/'), outdir=paste0(datadir,'/dexcom-g6/derived/'), device=1, nightstart='17:00')
+```
+
+
+## 8. Running GLU on the command line
+
+GLU can also be directly from the command line, using the run.R script.
+
+For example, to process both example Medtronic Ipro2 data files:
+```bash
+Rscript run.R --indir="/path/to/in/dir/" --outdir="/path/to/out/dir/"
+```
+
+To process a specific CGM data file, specify the filename argument:
+```bash
+Rscript run.R --indir="/path/to/in/dir/"  --outdir="/path/to/out/dir/" --filename="infile.csv"
+```
+
+See all the arguments available by calling `run.R` with not arguments:
+
+```bash
+Rscript run.R
+```

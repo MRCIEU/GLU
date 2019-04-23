@@ -18,7 +18,9 @@
 
 
 
-# process arguments supplied to GLU by the user.
+#' Process arguments supplied to GLU by the user.
+#' @return List of options specified by the user.
+#' @export
 parseArgs <- function() {
 
 	option_list = list(
@@ -40,9 +42,12 @@ parseArgs <- function() {
 	optparse::make_option(c("-b", "--device"), type="integer", default=0, help="CGM device used. 0: medtronic ipro2, 1: dexcom G2, 2: Abbott freestyle libre, 3: other device (data provided in generic format). [default= %default]")
 	)
 
-
 	opt_parser = optparse::OptionParser(option_list=option_list)
 	opt =  optparse::parse_args(opt_parser)
+
+	if (is.null(opt$indir)) {
+		optparse::print_help(opt_parser)
+	}
 
 	return(opt)
 }

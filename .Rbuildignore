@@ -1,0 +1,4 @@
+inst/extdata/medtronic-ipro2/derived/*
+inst/extdata/dexcom-g6/derived/*
+inst/extdata/freestyle-libre/derived/*
+
