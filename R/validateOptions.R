@@ -91,7 +91,7 @@ print(hypothreshold)
 		###############################
 		# TBC validate time
 
-		daystart <<- strptime(daystart, format='%H:%M')
+		daystart = strptime(daystart, format='%H:%M')
         }
 
 
@@ -104,8 +104,8 @@ print(hypothreshold)
 		# TBC validate time
         }
 
-	print(paste0("Night start: ", format(nightstart, '%H:%M')))
-	print(paste0("Day start: ", format(daystart, '%H:%M')))
+	print(paste0("Night start: ", format(nightstart, format='%H:%M')))
+	print(paste0("Day start: ", format(daystart, format='%H:%M')))
 
 
 
