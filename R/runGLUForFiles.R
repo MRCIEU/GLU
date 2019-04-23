@@ -17,8 +17,29 @@
 # DEALINGS IN THE SOFTWARE.
 
 
-
+#' Run GLU for given set of files
+#'
+#' @param files CGM data files for which variables will be derived.
+#' @param indir Path of input directory containing input files.
+#' @param outdir Path of output directory where derived data will be stored.
+#' @param device Device type: 0 (medtronic ipro2); 1 (Dexcom G2); 2 (Abbott Freestyle Libre), default 0.
+#' @param daystart Time of night to day transition in format HH:MM, default 06:30.
+#' @param nightstart Time of day to night transition in format HH:MM, default 23:00.
+#' @param timeformat Time format in the CGM data, default %d/%m/%y %H:%M:%S.
+#' @param impute Logical. If TRUE then the 'approximal imputation' approach to dealing with missing data is used. If FALSE then the 'complete days' approach is used. 
+#' @param freq Integer. CGM epoch data frequency (minutes).
+#' @param outlierthreshold Numeric. The value k used for outlier detection threshold d=k*SD.
+#' @param hypothreshold Numeric. Threshold between hypo- and normo- glycaemia.
+#' @param hyperthreshold Numeric. Threshold between normo- and hyper- glycaemia.
+#' @param save Logical. If TRUE then derived CGM sequence(s) are stored.
+#' @param pregnancy Logical. If TRUE then data is for pregnancy study, so pregnancy specific statistics should be derived.
+#' @param diabetes Logical. If TRUE then data is for diabetes study, so pregnancy specific statistics should be derived.
+#' @export
 runGLUForFiles <- function(files, indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', timeformat='%d/%m/%y %H:%M:%S', impute=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
+
+
+print('Running GLU...')
+print(paste0('GLU package version: ', packageVersion("GLU")))
 
 
 vars = validateOptions(files, indir, outdir, device, daystart, nightstart, timeformat, impute, freq, outlierthreshold, hypothreshold, hyperthreshold, save, pregnancy, diabetes)

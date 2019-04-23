@@ -35,10 +35,6 @@ plotCGM <- function(validDays, dir, userID, hypothreshold, hyperthreshold) {
 	}
 
 
-	library("ggplot2")
-#	library("stringr")
-
-
 	for (vd in validDays) {
 
 		#############
@@ -140,6 +136,8 @@ plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 
 	}
 
+	rawV$time = as.POSIXct(rawV$time)
+
 	p=ggplot(rawV, aes(x=time))
 
 	## add coloured band to background indicating normal range
@@ -173,6 +171,9 @@ plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 	events = vd[["events"]]
 
 	if (!is.null(events)) {
+
+		events$time = as.POSIXct(events$time)
+
 		## plot meal times - square
 		idxMeal = which(events$event == "MEAL")
 		if (length(idxMeal)>0) {
@@ -206,6 +207,9 @@ plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 
 	bgs = vd[["bg"]]
 	if (!is.null(bgs)) {
+
+		bgs$time = as.POSIXct(bgs$time)
+
 		## plot blood glucose readings - diamonds
 	        idxBG = which(!is.na(bgs$bgReading))
 	        if (length(idxBG)>0) {

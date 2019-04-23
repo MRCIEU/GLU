@@ -40,7 +40,6 @@ getDays <- function(raw, nightstart, daystart, epochFrequency) {
 
 	bg = raw[["bg"]]
 	events = raw[["events"]]
-	library(data.table)
 
 	rawData = raw[["sg"]]
  	rawData$interp = FALSE
@@ -56,8 +55,8 @@ getDays <- function(raw, nightstart, daystart, epochFrequency) {
 	## get day and night start time for this day, assuming night-to-day transition is the day after the day-to-night transition
 
 	# month is zero-based
-	t1str = paste(timestart$mday, "/", timestart$mon+1, "/" , year(timestart), " ", nightstart$hour, ":", nightstart$min, sep="")
-	t2str = paste(timestart$mday, "/", timestart$mon+1, "/" , year(timestart), " ", daystart$hour, ":", daystart$min, sep="")
+	t1str = paste(timestart$mday, "/", timestart$mon+1, "/" , data.table::year(timestart), " ", nightstart$hour, ":", nightstart$min, sep="")
+	t2str = paste(timestart$mday, "/", timestart$mon+1, "/" , data.table::year(timestart), " ", daystart$hour, ":", daystart$min, sep="")
 	thisDayToNight = strptime(t1str, format='%d/%m/%Y %H:%M')
 	thisNightToDay = strptime(t2str, format='%d/%m/%Y %H:%M')
 
@@ -163,7 +162,7 @@ getMinutesForBlock <- function(blockStart, blockEnd, epochFrequency) {
 	currentMinutes = NULL
 
         # start current block
-        timeMinute = strptime(paste(timePrev$mday, "/", timePrev$mon+1, "/" , year(timePrev), " ", timePrev$hour, ":", timePrev$min, sep=""), format='%d/%m/%Y %H:%M')
+        timeMinute = strptime(paste(timePrev$mday, "/", timePrev$mon+1, "/" , data.table::year(timePrev), " ", timePrev$hour, ":", timePrev$min, sep=""), format='%d/%m/%Y %H:%M')
         if (timeMinute<timePrev) {
  		timeMinute = as.POSIXlt(timeMinute + 60)
         }
@@ -208,7 +207,7 @@ incrementDay <- function(time) {
 	## hour changes if the clocks change
 	if (timeNew$hour!=time$hour) {
 		# mon+1 because retrieved zero based but set 1-based
-		t2str = paste(timeNew$mday, "/", timeNew$mon+1, "/" , year(timeNew), " ", time$hour, ":", timeNew$min, sep="")
+		t2str = paste(timeNew$mday, "/", timeNew$mon+1, "/" , data.table::year(timeNew), " ", time$hour, ":", timeNew$min, sep="")
 		timeNew = strptime(t2str, format='%d/%m/%Y %H:%M')
 	}
 
@@ -315,19 +314,19 @@ isValidDay <- function(nighttime, daytime, nightstart, daystart) {
 
 		# does night start at right time
 		thisnightstart = nighttime$time[1]
-		isvnightstart = nightstart$hour == hour(thisnightstart) & nightstart$min == thisnightstart$min
+		isvnightstart = nightstart$hour == data.table::hour(thisnightstart) & nightstart$min == thisnightstart$min
 
 		# does day start at right time
 		thisdaystart = daytime$time[1]
-                isvdaystart = daystart$hour == hour(thisdaystart) & daystart$min == thisdaystart$min
+                isvdaystart = daystart$hour == data.table::hour(thisdaystart) & daystart$min == thisdaystart$min
 
 		# does night end at right time
                 thisnightend = nighttime$time[nrow(nighttime)]
-                isvnightend = daystart$hour == hour(thisnightend) & daystart$min == thisnightend$min
+                isvnightend = daystart$hour == data.table::hour(thisnightend) & daystart$min == thisnightend$min
 
                 # does day end at right time
                 thisdayend = daytime$time[nrow(daytime)]
-                isvdayend = nightstart$hour == hour(thisdayend) & nightstart$min == thisdayend$min
+                isvdayend = nightstart$hour == data.table::hour(thisdayend) & nightstart$min == thisdayend$min
 
 
 		# does the day have NAs

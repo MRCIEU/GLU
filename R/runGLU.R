@@ -17,22 +17,11 @@
 # DEALINGS IN THE SOFTWARE.
 
 
-library("ggplot2")
-#library("stringr")
-#library(data.table)
-
-
-####
-#### This is the main script used to run the GLU tool
-
-options(warn=2)
-
-source("addSource.R")
-addSource()
-
-
-# parse arguments - directory is required, if filename is not specified then all files in directory are processed
-opt = parseArgs()
+#' Main function to run GLU from the command line
+#'
+#' @param opt List containing command line arguments.
+#' @export
+runGLU <- function(opt) {
 
 # if user specifies a filename then process this, otherwise process all other files in indir
 if (!is.null(opt$filename)) {
@@ -48,7 +37,7 @@ if (!is.null(opt$filename)) {
 	files = list.files(opt$indir, pattern=".*\\..*", full.names=FALSE)
 }
 
-runGLUForFiles(files, opt$indir, opt$outdir, opt$device, opt$daystart, opt$nightstart, opt$timeformat, opt$impute, opt$freq, opt$outlierthreshold, opt$hypothreshold, opt$hyperthreshold, opt$save, opt$pregnancy, opt$diabetes)
+runGLUForFiles(files=files, indir=opt$indir, outdir=opt$outdir, device=opt$device, daystart=opt$daystart, nightstart=opt$nightstart, timeformat=opt$timeformat, impute=opt$impute, freq=opt$freq, outlierthreshold=opt$outlierthreshold, hypothreshold=opt$hypothreshold, hyperthreshold=opt$hyperthreshold, save=opt$save, pregnancy=opt$pregnancy, diabetes=opt$diabetes)
 
-
+}
 

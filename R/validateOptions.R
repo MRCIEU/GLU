@@ -43,8 +43,7 @@ print(hypothreshold)
 
 
         if (is.null(indir)){
-                print_help(opt_parser)
-                stop("indirectory argument must be supplied", call.=FALSE)
+                stop("Input data directory argument must be supplied", call.=FALSE)
         }
 	else if (!file.exists(indir)) {
                 stop(paste("Input data directory indirectory=", indir, " does not exist", sep=""), call.=FALSE)
@@ -53,9 +52,12 @@ print(hypothreshold)
 	if (is.null(outdir)){
                 outdir = indir
         }
-	else if (!file.exists(outdir)) {
-                stop(paste("Output data directory outdir=", outdir, " does not exist", sep=""), call.=FALSE)
-        }
+
+	# create output directory if it doesn't exist
+	if (!file.exists(outdir)) {
+		print(paste0('Creating output directory: ', outdir))
+		dir.create(outdir)
+	}
 
 	validDaysDir = file.path(outdir, "validdays/")
         if (save ==TRUE & !file.exists(validDaysDir)) {
