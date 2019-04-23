@@ -17,7 +17,8 @@
 # DEALINGS IN THE SOFTWARE.
 
 
-runGLUForFiles <- function(files, indir, outdir=NULL, device=0, daystart='HH:MM', nightstart='HH:MM', timeformat='%d/%m/%y %H:%M:%S', impute=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
+
+runGLUForFiles <- function(files, indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', timeformat='%d/%m/%y %H:%M:%S', impute=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
 
 
 vars = validateOptions(files, indir, outdir, device, daystart, nightstart, timeformat, impute, freq, outlierthreshold, hypothreshold, hyperthreshold, save, pregnancy, diabetes)

@@ -16,8 +16,7 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-
-runGLUForDirectory <- function(indir, outdir=NULL, device=0, daystart='HH:MM', nightstart='HH:MM', timeformat='%d/%m/%y %H:%M:%S', impute=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
+runGLUForDirectory <- function(indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', timeformat='%d/%m/%y %H:%M:%S', impute=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
 
 
 	files = list.files(indir, pattern=".*\\..*", full.names=FALSE)
