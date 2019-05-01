@@ -170,9 +170,9 @@ convertFileAbbotFreestyleLibre <- function(inFile, outFile, filename) {
 	## convert lines to data frame
 	data = read.table(text = lines, sep='\t', quote="", header=1)
 
-	# keep only zero record type - the SG values every 15 minutes
-	ix = which(data$Record.Type == 0)
-	data = data
+	# keep only zero record type - the SG values every 15 minutes and event rows (i.e. exclude the scan glucose values)
+	ix = which(data$Record.Type != 1)
+	data = data[ix,]
 
 	## timestamp - date and time
 	data = checkAndRename('Time', 'time', data)
