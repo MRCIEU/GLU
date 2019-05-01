@@ -289,7 +289,7 @@ runGLUForFiles(files='data_export-999998.csv', indir=paste0(datadir,'/medtronic-
 ```
 library('GLU')
 datadir=system.file("extdata", package = "GLU")
-runGLUForDirectory(indir=paste0(datadir, paste0(datadir,'/freestyle-libre/original/'), outdir=paste0(datadir,'/freestyle-libre/derived/'), device=2, impute=TRUE, freq=15, nightstart='00:00')
+runGLUForDirectory(indir=paste0(datadir, '/freestyle-libre/original/'), outdir=paste0(datadir,'/freestyle-libre/derived/'), device=2, impute=TRUE, freq=15, nightstart='00:00')
 ```
 
 #### Dexcom g6
