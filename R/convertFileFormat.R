@@ -43,6 +43,7 @@ convertFileFormat <- function(dirIn, filename, dirOut, device=0) {
 
 convertFileMedtronic <- function(inFile, outFile, filename) {
 
+
 	# read lines using correct encoding
 	lines = readLines(inFile, encoding="utf-16", skipNul = TRUE)
 
@@ -85,7 +86,7 @@ convertFileMedtronic <- function(inFile, outFile, filename) {
 		#stop(paste("Column missing from input file:", colName),	call.=FALSE)
 	} else {
 		colName = "Meal.Size"
-		idxmeal = which(names(data) == colName)
+		ixmeal = which(names(data) == colName)
 		if (length(ixmeal)>0) {
 			names(data)[ixmeal]="meal"
 		}
