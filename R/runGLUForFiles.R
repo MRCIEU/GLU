@@ -177,10 +177,10 @@ if (exists("summaryVariables")==TRUE) {
 
 	# overall summaries
 	summaryVariablesBrief = summaryVariables[,c("ID", "numValidDays", "meanmadPerDay", "meanProportionLowPerDay", "meanProportionNormalPerDay", "meanProportionHighPerDay", "meanAUCperDay", "meanSGVPPerDay", "meanFastingProxyPerDay", "hasInvalidDeviations")]
-	write.table(summaryVariablesBrief, file=paste(outdir, "cgmSummary", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE)
+	write.table(summaryVariablesBrief, file=paste(outdir, "/", "cgmSummary", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE)
 
 	# verbose version with summaries per day
-	write.table(summaryVariables, file=paste(outdir, "cgmSummaryVerbose", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE)
+	write.table(summaryVariables, file=paste(outdir, "/", "cgmSummaryVerbose", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE)
 
 
 } else {
