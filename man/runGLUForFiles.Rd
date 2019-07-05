@@ -6,9 +6,11 @@
 \usage{
 runGLUForFiles(files, indir, outdir = NULL, device = 0,
   daystart = "06:30", nightstart = "23:00",
-  timeformat = "\%d/\%m/\%y \%H:\%M:\%S", impute = FALSE, freq = 5,
-  outlierthreshold = 5, hypothreshold = NULL, hyperthreshold = NULL,
-  save = FALSE, pregnancy = FALSE, diabetes = FALSE)
+  dayPeriodStartTime = NULL, firstvalid = FALSE,
+  timeformat = "\%d/\%m/\%y \%H:\%M:\%S", imputeApproximal = FALSE,
+  imputeOther = FALSE, freq = 5, outlierthreshold = 5,
+  hypothreshold = NULL, hyperthreshold = NULL, save = FALSE,
+  pregnancy = FALSE, diabetes = FALSE, epochfrequency = 5)
 }
 \arguments{
 \item{files}{CGM data files for which variables will be derived.}
@@ -23,9 +25,13 @@ runGLUForFiles(files, indir, outdir = NULL, device = 0,
 
 \item{nightstart}{Time of day to night transition in format HH:MM, default 23:00.}
 
+\item{dayPeriodStartTime}{Start time of day period, default is nightstart.}
+
 \item{timeformat}{Time format in the CGM data, default \%d/\%m/\%y \%H:\%M:\%S.}
 
-\item{impute}{Logical. If TRUE then the 'approximal imputation' approach to dealing with missing data is used. If FALSE then the 'complete days' approach is used.}
+\item{imputeApproximal}{Logical. If TRUE then the 'approximal imputation' approach to dealing with missing data is used. If both imputeApproximal and imputeOther are FALSE then the 'complete days' approach is used.}
+
+\item{imputeOther}{Logical. If TRUE then the 'other day imputation' approach to dealing with missing data is used. If both imputeApproximal and imputeOther are FALSE then the 'complete days' approach is used.}
 
 \item{freq}{Integer. CGM epoch data frequency (minutes).}
 
