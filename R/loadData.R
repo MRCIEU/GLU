@@ -26,7 +26,7 @@ loadData <- function(fileName, userID, rs) {
 
 	dir = rs@outdir
 
-	rawData <- read.table(paste(dir,'/',fileName,sep=""), sep=",", header=1)
+	rawData <- read.table(paste(dir,'/', fileName,sep=""), sep=",", header=1)
 
 	## REQUIRED COLUMNS
 	## check it has required fields
