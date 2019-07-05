@@ -136,7 +136,7 @@ getDays <- function(raw, rs) {
 		minutesForBlock = getMinutesForBlock(rawData[nrow(rawData),], lastTimePoint, rs@epochfrequency)
 
 		# add last timepoint too as minutesForBlock is exclusive of end time point
-		#minutesForBlock = rbind(minutesForBlock, lastTimePoint)
+		minutesForBlock = rbind(minutesForBlock, lastTimePoint)
 
 		minutesForBlock = setDayAndNight(minutesForBlock, rs)
 		dayPeriod = rbind(currentMinutes, minutesForBlock)
@@ -281,7 +281,7 @@ getMinutesForBlock <- function(blockStart, blockEnd, epochFrequency) {
 	timeDiffMins = as.numeric(difftime(timeThis,timeMinute, units="mins"))
 
         # if end time is a round minute it is part of the next block
-        while (timeDiffMins >= 0) {
+        while (timeDiffMins > 0) {
 
         	##
         	## get new interpolated row for this minute
