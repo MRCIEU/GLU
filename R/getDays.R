@@ -236,21 +236,41 @@ setDayAndNight <- function(minutesForBlock, rs) {
 	ntHourThresh = rs@nightstart$hour
         ntMinThresh = rs@nightstart$min
 
-	# nighttime: before daytime hour
-	ix = which(minutesForBlock$time$hour < dtHourThresh)
-	minutesForBlock$isnight[ix] = TRUE
+	if (ntHourThresh > dtHourThresh | (ntHourThresh == dtHourThresh & ntMinThresh>dtMinThresh)) {
 
-	# nighttime: in daytime hour but before daytime min
-        ix = which(minutesForBlock$time$hour == dtHourThresh & minutesForBlock$time$min < dtMinThresh)
-        minutesForBlock$isnight[ix] = TRUE
+		## nt after dt, so night-time is before day time start and after night time start
+
+		# nighttime: before daytime hour
+		ix = which(minutesForBlock$time$hour < dtHourThresh)
+		minutesForBlock$isnight[ix] = TRUE
+
+		# nighttime: in daytime hour but before daytime min
+	        ix = which(minutesForBlock$time$hour == dtHourThresh & minutesForBlock$time$min < dtMinThresh)
+	        minutesForBlock$isnight[ix] = TRUE
 	
-	# nighttime: after nighttime hour
-        ix = which(minutesForBlock$time$hour >= ntHourThresh)
-        minutesForBlock$isnight[ix] = TRUE
+		# nighttime: after nighttime hour
+	        ix = which(minutesForBlock$time$hour >= ntHourThresh)
+	        minutesForBlock$isnight[ix] = TRUE
 
-        # nighttime: in nighttime hour but after nighttime min
-        ix = which(minutesForBlock$time$hour == ntHourThresh & minutesForBlock$time$min >= ntMinThresh)
-        minutesForBlock$isnight[ix] = TRUE
+	        # nighttime: in nighttime hour but after nighttime min
+	        ix = which(minutesForBlock$time$hour == ntHourThresh & minutesForBlock$time$min >= ntMinThresh)
+	        minutesForBlock$isnight[ix] = TRUE
+	}
+	else {
+
+		## nt before dt, so night-time is after night time start but before day time start
+
+		ix = which(minutesForBlock$time$hour > ntHourThresh & minutesForBlock$time$hour < dtHourThresh)
+		minutesForBlock$isnight[ix] = TRUE
+
+		ix = which(minutesForBlock$time$hour == ntHourThresh & minutesForBlock$time$min >= ntMinThresh & minutesForBlock$time$hour < dtHourThresh)
+		minutesForBlock$isnight[ix] = TRUE
+
+		ix = which(minutesForBlock$time$hour == ntHourThresh & minutesForBlock$time$min >= ntMinThresh & minutesForBlock$time$hour == dtHourThresh & minutesForBlock$time$min < dtMinThresh)
+                minutesForBlock$isnight[ix] = TRUE
+
+	}
+
 
 	return(minutesForBlock)
 
