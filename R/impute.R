@@ -75,22 +75,17 @@ doImputeOtherDay <- function(day, alldays, nightstart) {
 		for (d in alldays) {
 			dx = d@glucose
 
-			ixStart = which(dx$time$hour == startDate$hour & dx$time$min == startDate$min)
-			ixEnd = which(dx$time$hour == endDate$hour & dx$time$min == endDate$min)
-
-			if (length(ixStart)>0 & length(ixEnd)>0) {
-				cSeq = dx$sgReading[min(ixStart):min(ixEnd)]
+			# same position across days so use minute indexes
+			cSeq = dx$sgReading[b$start:b$end]
 				
-				if (is.null(candidateSeqs)) {
-					candidateSeqs = data.frame(cSeq)
-					candidateDays = data.frame(d@dayidx)
-				}
-				else {
-					candidateSeqs = cbind(candidateSeqs, cSeq)
-					candidateDays = cbind(candidateDays, d@dayidx)
-				}
+			if (is.null(candidateSeqs)) {
+				candidateSeqs = data.frame(cSeq)
+				candidateDays = data.frame(d@dayidx)
 			}
-
+			else {
+				candidateSeqs = cbind(candidateSeqs, cSeq)
+				candidateDays = cbind(candidateDays, d@dayidx)
+			}
 		}
 
 		# restrict to only seqs with no missingness
@@ -243,7 +238,16 @@ getMissingBlocks <- function(data) {
                while (idx<=nrow(data)) {
 
 			idxNotNA = which(!is.na(data$sgReading))
-			idxend = min(idxNotNA[which(idxNotNA>idx)]) - 1
+			idxNextNotNA = which(idxNotNA>idx)
+
+			# get end of this NA block (either before a non NA time point or the end of the sequence if there isn't one
+			if (length(idxNextNotNA)>=1) {
+				idxend = min(idxNotNA[idxNextNotNA]) - 1
+			}
+			else {
+				# last NA position
+				idxend = idxNA[length(idxNA)]
+			}
 
 			leftstart = idx - 60
 			leftseq = NULL
@@ -255,6 +259,7 @@ getMissingBlocks <- function(data) {
                         if (rightend<=nrow(data)) {
                                 rightseq = data[(idxend+1):rightend,]
                         }
+
 
 			newMB = list(start=idx, end=idxend, startdate=data$time[idx], enddate=data$time[idxend], left=leftseq, right=rightseq)
 			mbs[[count]] = newMB
