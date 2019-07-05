@@ -21,11 +21,7 @@
 # Calculate proportion of time in low, normal and high glucose levels, using linear interpolation between measurements.
 # The thresholds used are different depending if the study is of the general population or during pregnancy or for diabetics.
 # Returns a data frame with the time proportions for low, normal and high, for sequence raw.
-timeProportions <- function(raw, lowT, highT) {
-
-	# get only rows with SG readings
-	sgIdx = which(!is.na(raw$sgReading))
-	data = raw[sgIdx,]
+timeProportions <- function(data, lowT, highT) {
 
 	# init time spent in each range
 	lowTime = 0
