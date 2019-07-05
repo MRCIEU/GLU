@@ -28,22 +28,14 @@ markLargeDeviationsByDay <- function(days, outlierthreshold=5) {
 	# for each day, mark large deviations
 	for (vd in days) {
 
-		raw = collateSequence(vd)
+		raw = vd@glucose
 		raw = markLargeDeviations(raw, outlierthreshold)
 
-		# split back into night- and day-time
-		numrowsNT = nrow(vd[["nighttime"]])		
-		newNT = raw[1:numrowsNT,]
-		newDT = raw[numrowsNT:nrow(raw),]
-
 		# check number of minutes in night and day is still correct and update vd
-		stopifnot(nrow(newDT) == nrow(vd[["daytime"]]))
-		stopifnot(nrow(newNT) == nrow(vd[["nighttime"]]))
-		vd[["daytime"]] = newDT
-		vd[["nighttime"]] = newNT
+		stopifnot(nrow(raw) == nrow(vd@glucose))
+		vd@glucose = raw
 
 		alldaysMarked[[countDays]] = vd
-
                 countDays=countDays+1
 
 	}

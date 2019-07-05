@@ -35,14 +35,14 @@ timeProportionsByDay <- function(validDays, lowT, highT) {
 	for (vd in validDays) {
 
 		# sequence of timepoints for this day
-		raw = collateSequence(vd)
+		raw = getDayGlucoseValues(vd)
 
 		# auc of this valid day only
 		tpVD = timeProportions(raw, lowT, highT)
 
 		# nighttime, daytime aucs
-		tpVDn = timeProportions(raw[which(raw$daytime==FALSE),], lowT, highT)
-		tpVDd = timeProportions(raw[which(raw$daytime==TRUE),], lowT, highT)
+		tpVDn = timeProportions(getDayGlucoseValues(vd, night=TRUE), lowT, highT)
+		tpVDd = timeProportions(getDayGlucoseValues(vd, day=TRUE), lowT, highT)
 
 		tps = append(tps, c(tpVD, tpVDn, tpVDd))
 

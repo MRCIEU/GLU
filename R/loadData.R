@@ -22,7 +22,9 @@
 # Input data has columns: bgReading, sgReading, meal, Exercise, Medication, time.
 # Returns list object containing participant ID and 3 data frames: sg, bg and events.
 
-loadData <- function(dir, fileName, userID, timeFormat) {
+loadData <- function(fileName, userID, rs) {
+
+	dir = rs@outdir
 
 	rawData <- read.table(paste(dir,'/',fileName,sep=""), sep=",", header=1)
 
@@ -41,7 +43,7 @@ loadData <- function(dir, fileName, userID, timeFormat) {
         if (length(idxT)==0) {
                 stop(paste("Column missing from input file:", colName),     call.=FALSE)
         }
-	rawData$time = strptime(rawData$time, format=timeFormat)
+	rawData$time = strptime(rawData$time, format=rs@timeformat)
 
 	if (length(which(!is.na(rawData$time)))==0) {
 		stop(paste("Timestamp column format is not right"))

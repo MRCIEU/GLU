@@ -28,14 +28,12 @@ SGVPByDay <- function(validDays) {
 	count=1
 	for (vd in validDays) {
 
-		raw = collateSequence(vd)
-
 		# SGVP of this valid day only
-		sgvpVD = SGVP(raw, TRUE)
+		sgvpVD = SGVP(getDayGlucoseValues(vd, interp=TRUE), TRUE)
 
 		# nighttime, daytime SGVP
-		sgvpVDn = SGVP(raw[which(raw$daytime==FALSE),], TRUE)
-		sgvpVDd = SGVP(raw[which(raw$daytime==TRUE),], TRUE)
+		sgvpVDn = SGVP(getDayGlucoseValues(vd, night=TRUE, interp=TRUE), TRUE)
+		sgvpVDd = SGVP(getDayGlucoseValues(vd, day=TRUE, interp=TRUE), TRUE)
 
 		sgvps = append(sgvps, c(sgvpVD, sgvpVDn, sgvpVDd))
 
@@ -43,7 +41,6 @@ SGVPByDay <- function(validDays) {
 
                 count=count+1
 	}
-
 
 	res = rbind(sgvps)
         colnames(res) = cnames

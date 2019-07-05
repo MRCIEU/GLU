@@ -19,15 +19,15 @@
 
 
 # Returns valid days from the set of all days
-getValidDays <- function(alldays) {
+getValidDays <- function(participantData) {
 
 	# list of valid days
 	vds = list()
 
 	countDays=1
-	for (day in alldays) {
+	for (day in participantData@days) {
 		
-		if (day[["validday"]] == TRUE) {
+		if (day@validday == TRUE) {
 			vds[[countDays]] = day
 			countDays = countDays + 1
 		}

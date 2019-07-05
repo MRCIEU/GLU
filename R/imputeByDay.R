@@ -20,7 +20,7 @@
 
 # For each day in alldays, try to impute those that are not already valid
 # Returns a list of updated days
-imputeByDay <- function(alldays) {
+imputeByDay <- function(alldays, rs) {
 
 	alldaysImputed = list()
 	countDays=1
@@ -29,8 +29,8 @@ imputeByDay <- function(alldays) {
 	for (day in alldays) {
 
 		# only impute if day is not already valid
-		if (day[["validday"]] == FALSE) {
-			day = impute(day)
+		if (day@validday == FALSE) {
+			day = impute(day, alldays, rs@nightstart, rs@imputeOther)
 		}
 
 		alldaysImputed[[countDays]] = day

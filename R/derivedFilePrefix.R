@@ -18,17 +18,23 @@
 
 
 # sets a prefix string for the derived data file name
+# rs: run options
 # if running GLU for a specific file then includes user ID.
-# if running GLU with impute option then includes 'imputed'
+# if running GLU with imputeApproximal option then includes 'impute-approximal'
+# if running GLU with imputeOther option then includes 'impute-other'
 # E.g. '-1234-imputed'
-derivedFilePrefix <- function(impute) {
+derivedFilePrefix <- function(rs) {
 
 	# set name prefix for derived data file
 	namePrefix = ""
 
-	if (impute==TRUE) {
-	namePrefix = paste(namePrefix, '-imputed', sep='')
+	if (rs@imputeApproximal==TRUE) {
+		namePrefix = paste(namePrefix, '-impute-approximal', sep='')
 	}
+	else if (rs@imputeOther==TRUE) {
+		namePrefix = paste(namePrefix, '-impute-other', sep='')
+	}
+
 
 	return(namePrefix)
 }

@@ -37,7 +37,7 @@ if (!is.null(opt$filename)) {
 	files = list.files(opt$indir, pattern=".*\\..*", full.names=FALSE)
 }
 
-runGLUForFiles(files=files, indir=opt$indir, outdir=opt$outdir, device=opt$device, daystart=opt$daystart, nightstart=opt$nightstart, timeformat=opt$timeformat, impute=opt$impute, freq=opt$freq, outlierthreshold=opt$outlierthreshold, hypothreshold=opt$hypothreshold, hyperthreshold=opt$hyperthreshold, save=opt$save, pregnancy=opt$pregnancy, diabetes=opt$diabetes)
+runGLUForFiles(files=files, indir=opt$indir, outdir=opt$outdir, device=opt$device, daystart=opt$daystart, nightstart=opt$nightstart, dayPeriodStartTime=opt$dayPeriodStartTime, timeformat=opt$timeformat, imputeApproximal=opt$impute_approximal, imputeOther=opt$impute_other, freq=opt$freq, outlierthreshold=opt$outlierthreshold, hypothreshold=opt$hypothreshold, hyperthreshold=opt$hyperthreshold, save=opt$save, pregnancy=opt$pregnancy, diabetes=opt$diabetes)
 
 }
 

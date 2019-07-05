@@ -33,7 +33,7 @@ numPeaksByDay <- function(validDays) {
 	for (vd in validDays) {
 		
 		# sequence of timepoints for this day
-		raw = collateSequence(vd)
+		raw = vd@glucose
 
 		# auc of this day only
 		npVD = numPeaks(raw)

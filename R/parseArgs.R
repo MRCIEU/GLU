@@ -29,16 +29,19 @@ parseArgs <- function() {
   	optparse::make_option(c("-o", "--outdir"), type="character", default=NULL, help="Directory where derived data should be stored", metavar="character"),
 	optparse::make_option(c("-n", "--nightstart"), type="character", default=NULL, help="Time of day to night transition, HH:MM", metavar="character"),
 	optparse::make_option(c("-d", "--daystart"), type="character", default=NULL, help="Time of night to day transition, HH:MM", metavar="character"),
+	optparse::make_option(c("-g", "--dayPeriodStartTime"), type="character", default=NULL, help="Time of day period start, HH:MM", metavar="character"),
+	optparse::make_option(c("-c", "--firstvalid"), action="store_true", default=FALSE, help="Day period starts at time of first valid glucose time point [default= %default]"),
 #	optparse::make_option(c("-m", "--missingsummary"), action="store_true", default=FALSE, help="Option to generate missing data summary [default= %default]"),
 	optparse::make_option(c("-l", "--hypothreshold"), type="character", default=NULL, help="Threshold between hypo- and normo- glycaemia", metavar="number"),
 	optparse::make_option(c("-u", "--hyperthreshold"), type="character", default=NULL, help="Threshold between normo- and hyper- glycaemia", metavar="number"),
-	optparse::make_option(c("-a", "--impute"), action="store_true", default=FALSE, help="Perform matched imputation [default= %default]"),
+	optparse::make_option(c("-a", "--impute_approximal"), action="store_true", default=FALSE, help="Perform approximal imputation [default= %default]"),
+	optparse::make_option(c("-z", "--impute_other_day"), action="store_true", default=FALSE, help="Perform other day imputation [default= %default]"),
 	optparse::make_option(c("-s", "--save"), action="store_true", default=FALSE, help="Save derived CGM sequence(s) [default= %default]"),
 	optparse::make_option(c("-e", "--freq"), type="integer", default=5, help="CGM epoch data frequency (minutes) [default= %default]", metavar="number"),
 	optparse::make_option(c("-t", "--timeformat"), type="character", default='%d/%m/%y %H:%M:%S', help="Time format in the CGM data [default= %default]", metavar="character"),
 	optparse::make_option(c("-k", "--outlierthreshold"), type="integer", default=5, help="Value k used for outlier detection threshold d=k*SD [default= %default]", metavar="number"),
 	optparse::make_option(c("-p", "--pregnancy"), action="store_true", default=FALSE, help="Data is for pregnancy study, so pregnancy specific statistics should be derived [default= %default]"),
-  	optparse::make_option(c("-q", "--diabetes"), action="store_true", default=FALSE, help="Data is for diabetes study, so diabetes specific statistics should be derived [default= %default]"),
+	optparse::make_option(c("-q", "--diabetes"), action="store_true", default=FALSE, help="Data is for diabetes study, so diabetes specific statistics should be derived [default= %default]"),
 	optparse::make_option(c("-b", "--device"), type="integer", default=0, help="CGM device used. 0: medtronic ipro2, 1: dexcom G2, 2: Abbott freestyle libre, 3: other device (data provided in generic format). [default= %default]")
 	)
 

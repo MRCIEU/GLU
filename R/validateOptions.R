@@ -19,10 +19,8 @@
 
 
 # process arguments supplied to GLU by the user
-validateOptions <- function(files, indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', timeformat='%d/%m/%y %H:%M:%S', impute=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
+validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', dayPeriodStartTime=NULL, firstvalid=FALSE, timeformat='%d/%m/%y %H:%M:%S', imputeApproximal=FALSE, imputeOther=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
 
-
-print(hypothreshold)
 
 	if (device<0 | device>3) {
 		stop("Device index must be 0 (medtronic ipro2), 1 (Dexcom g2), 2: (Abbott freestyle libre), or 3 (other device, generic format).")
@@ -59,7 +57,7 @@ print(hypothreshold)
 		dir.create(outdir)
 	}
 
-	validDaysDir = file.path(outdir, "validdays/")
+	validDaysDir = file.path(outdir, "/validdays/")
         if (save ==TRUE & !file.exists(validDaysDir)) {
 
                 # make valid days subdirectory if it doesn't exist
@@ -84,20 +82,17 @@ print(hypothreshold)
 
 
 
-	if (is.null(daystart)){
+	if (is.null(daystart)) {
 		daystart = '06:30'
 		daystart = strptime(daystart, format='%H:%M')
         }
 	else {
-
-		###############################
 		# TBC validate time
-
 		daystart = strptime(daystart, format='%H:%M')
         }
 
 
-	if (is.null(nightstart)){
+	if (is.null(nightstart)) {
 		nightstart = '23:00' # 23:00
                 nightstart = strptime(nightstart, format='%H:%M')
         }
@@ -106,10 +101,25 @@ print(hypothreshold)
 		# TBC validate time
         }
 
-	print(paste0("Night start: ", format(nightstart, format='%H:%M')))
-	print(paste0("Day start: ", format(daystart, format='%H:%M')))
+	if (is.null(dayPeriodStartTime)) {
+		dayPeriodStartTime = nightstart
+	}
+	else {
+		dayPeriodStartTime = strptime(dayPeriodStartTime, format='%H:%M')
+	}
 
 
+
+	print(paste0("Nighttime start: ", format(nightstart, format='%H:%M')))
+	print(paste0("Daytime start: ", format(daystart, format='%H:%M')))
+
+
+	if (firstvalid==TRUE) {
+		print("Day period start: first valid time point")
+	}
+	else {
+		print(paste0("Day period start: ", format(dayPeriodStartTime, format='%H:%M')))
+	}
 
 	# both thresholds need to be set or neither
 	if ((is.null(hypothreshold) & !is.null(hyperthreshold)) | (is.null(hyperthreshold) & !is.null(hypothreshold))) {
@@ -144,6 +154,22 @@ print(hypothreshold)
 
 	}
 
-	return(list(outdir=outdir, hypothreshold=hypothreshold, hyperthreshold=hyperthreshold, nightstart=nightstart, daystart=daystart))
+
+	if (imputeApproximal == TRUE & imputeOther == TRUE) {
+		stop("Cannot use both approximal and other imputation - chose one of these options only.")
+	}
+	else if (imputeApproximal == TRUE) {
+		print("Using approximal imputation method")
+	}
+	else if (imputeOther == TRUE) {
+		print("Using other day imputation method")
+	}
+	else {
+		print("No imputation selected. Using complete days approach.")
+	}
+
+
+	runSettings = new("runSettings", indir=indir, outdir=outdir, device=device, timeformat=timeformat, imputeApproximal=imputeApproximal, imputeOther=imputeOther, epochfrequency=freq, hypothreshold=hypothreshold, hyperthreshold=hyperthreshold, nightstart=nightstart, daystart=daystart, outlierthreshold=outlierthreshold, dayPeriodStartTime=dayPeriodStartTime, firstvalid=firstvalid, save=save)
+	return(runSettings)
 
 }

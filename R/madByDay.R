@@ -28,14 +28,17 @@ madByDay <- function(validDays) {
 	count=1
 	for (vd in validDays) {
 
-		raw = collateSequence(vd)
+		raw = getDayGlucoseValues(vd)
 
 		# MAD of this valid day only
 		madVD = mad(raw$sgReading, constant=1, na.rm=TRUE)
 
 		# nighttime, daytime aucs
-		madVDn = mad(raw$sgReading[which(raw$daytime==FALSE)], constant=1, na.rm=TRUE)
-		madVDd = mad(raw$sgReading[which(raw$daytime==TRUE)], constant=1, na.rm=TRUE)
+		raw = getDayGlucoseValues(vd, night=TRUE)
+		madVDn = mad(raw$sgReading, constant=1, na.rm=TRUE)
+
+		raw = getDayGlucoseValues(vd, day=TRUE)
+		madVDd = mad(raw$sgReading, constant=1, na.rm=TRUE)
 
 		mads = append(mads, c(madVD, madVDn, madVDd))
 		cnames = append(cnames, c(paste("mad_day", count, sep=""), paste("mad_nt_day", count, sep=""), paste("mad_dt_day", count, sep="")))

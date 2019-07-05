@@ -18,39 +18,27 @@
 
 
 
-# Calculate AUC using trapezoid method.
-# Returns AUC value for sequence raw.
-auc <- function(raw) {
+# save arguments supplied to GLU by the user, for reporting in publications
+saveRunSettings <- function(runSettings) {
 
-	# get only rows with SG readings
-	sgIdx = which(!is.na(raw$sgReading))
-	data = raw[sgIdx,]
+	sink(paste0(runSettings@outdir, '/run-settings.txt'))
 
-	# total time period of SG data in raw
-	timeLengthPeriod = 0
+	print(paste0('indir: ', runSettings@indir))
+	print(paste0('outdir: ', runSettings@outdir))
+	print(paste0('device: ', runSettings@device))
+	print(paste0('daystart: ', runSettings@daystart))
+	print(paste0('nightstart: ', runSettings@nightstart))
+	print(paste0('timeformat: ', runSettings@timeformat))
+	print(paste0('imputeApproximal: ', runSettings@imputeApproximal))
+	print(paste0('imputeOther: ', runSettings@imputeOther))
+	print(paste0('freq: ', runSettings@freq))
+	print(paste0('outlierthreshold: ', runSettings@outlierthreshold))
+	print(paste0('hypothreshold: ', runSettings@hypothreshold))
+	print(paste0('hyperthreshold: ', runSettings@hyperthreshold))
+	print(paste0('save: ', runSettings@save))
+	print(paste0('pregnancy: ', runSettings@pregnancy))
+	print(paste0('diabetes: ', runSettings@diabetes))
 
-	# for each timepoint, add auc between this timepoint and the previous timepoint
-	aucValue = 0
+	sink()
 
-	if (nrow(data)>1) {
-		for (idx in 2:nrow(data)) {
-			timeDiffMins = as.numeric(difftime(data$time[idx], data$time[idx-1], units="mins"))
-
-			# only include if timepoint are 1 minute apart
-			if (timeDiffMins == 1) {
-
-				trapezoid = (data$sgReading[idx] + data$sgReading[idx-1]) * timeDiffMins * 0.5
-				aucValue = aucValue + trapezoid
-
-				timeLengthPeriod = timeLengthPeriod + timeDiffMins
-
-			}
-		}
-	}
-
-	# convert to auc per minute
-	aucValue = aucValue/timeLengthPeriod
-
-	return(aucValue)
 }
-

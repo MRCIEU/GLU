@@ -33,12 +33,12 @@
 #' @param pregnancy Logical. If TRUE then data is for pregnancy study, so pregnancy specific statistics should be derived.
 #' @param diabetes Logical. If TRUE then data is for diabetes study, so pregnancy specific statistics should be derived.
 #' @export
-runGLUForDirectory <- function(indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', timeformat='%d/%m/%y %H:%M:%S', impute=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
+runGLUForDirectory <- function(indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', dayPeriodStartTime=NULL, firstvalid=FALSE, timeformat='%d/%m/%y %H:%M:%S', imputeApproximal=FALSE, imputeOther=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
 
 
 	files = list.files(indir, pattern=".*\\..*", full.names=FALSE)
 
-	runGLUForFiles(files, indir, outdir, device, daystart, nightstart, timeformat, impute, freq, outlierthreshold, hypothreshold, hyperthreshold, save, pregnancy, diabetes)
+	runGLUForFiles(files, indir, outdir, device, daystart, nightstart, dayPeriodStartTime, firstvalid, timeformat, imputeApproximal, imputeOther, freq, outlierthreshold, hypothreshold, hyperthreshold, save, pregnancy, diabetes)
 
 }
 

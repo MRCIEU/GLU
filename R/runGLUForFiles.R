@@ -35,27 +35,27 @@
 #' @param pregnancy Logical. If TRUE then data is for pregnancy study, so pregnancy specific statistics should be derived.
 #' @param diabetes Logical. If TRUE then data is for diabetes study, so pregnancy specific statistics should be derived.
 #' @export
-runGLUForFiles <- function(files, indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', timeformat='%d/%m/%y %H:%M:%S', impute=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
+runGLUForFiles <- function(files, indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', dayPeriodStartTime=NULL, firstvalid=FALSE, timeformat='%d/%m/%y %H:%M:%S', imputeApproximal=FALSE, imputeOther=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE, epochfrequency=5) {
 
 
 print('Running GLU...')
 print(paste0('GLU package version: ', packageVersion("GLU")))
 
 
-vars = validateOptions(files, indir, outdir, device, daystart, nightstart, timeformat, impute, freq, outlierthreshold, hypothreshold, hyperthreshold, save, pregnancy, diabetes)
-outdir = vars$outdir
-hypothreshold = vars$hypothreshold
-hyperthreshold = vars$hyperthreshold
-nightstart = vars$nightstart
-daystart = vars$daystart
+
+# run settings
+rs = validateOptions(indir, outdir, device, daystart, nightstart, dayPeriodStartTime, firstvalid, timeformat, imputeApproximal, imputeOther, freq, outlierthreshold, hypothreshold, hyperthreshold, save, pregnancy, diabetes)
 
 
-namePrefix = derivedFilePrefix(impute)
+# Save run settings for reporting in publications
+saveRunSettings(rs)
+
+namePrefix = derivedFilePrefix(rs)
 
 
 # refresh impute logging file
-if (impute == TRUE) {
-        sink(paste0(outdir, 'logging-impute.txt'))
+if (rs@imputeApproximal == TRUE | rs@imputeOther == TRUE) {
+        sink(paste0(outdir, '/logging-impute.txt'))
         sink()
 }
 
@@ -79,13 +79,12 @@ for (f in files) {
 	######
 	###### convert file format depending on device type
 
-	convertFileFormat(indir, f, outdir, device)
-
+	convertFileFormat(f, rs)
 
 	#####
 	##### load data
 
-	raw <- loadData(outdir, f, userID, timeformat)
+	raw <- loadData(f, userID, rs)
 
 	if (nrow(raw[["sg"]]) == 0) {
 		print("No SG readings")
@@ -96,25 +95,19 @@ for (f in files) {
 	######
 	###### QC
 
-#	plotCGMTrace(raw[["sg"]], outdir, userID)
-
 	# get a list of days
-	alldays = getDays(raw, nightstart, daystart, freq)
+	participantData = getDays(raw, rs)
 
-
-#	plotCGM(alldays, outdir, userID)
-#	writeMissingSummaryByDay(alldays, impute, userID, filename, outdir)
-
-	if (impute == TRUE) {
+	if (rs@imputeApproximal == TRUE | rs@imputeOther == TRUE) {
 		print('imputing missing timepoints ...')
 		
-		sink(paste0(outdir, 'logging-impute.txt'), append=TRUE)
+		sink(paste0(outdir, '/logging-impute.txt'), append=TRUE)
 		print(paste0('*********** IMPUTING ', userID, ' ***********'))
-		alldays = imputeByDay(alldays)
+		participantData@days = imputeByDay(participantData@days, rs)
 		sink()
 	}
 
-	validDays = getValidDays(alldays)
+	validDays = getValidDays(participantData)
 
 	# number of valid days is size of list
 	numValidDays = c(length(validDays)) # for adding to results data frame
@@ -126,10 +119,8 @@ for (f in files) {
 	
 	print(paste0("Number of valid days: ", numValidDays))
 
-#	plotCGM(alldays, outdir, userID)
-
 	# mark invalid deviations per day
-        validDays = markLargeDeviationsByDay(validDays, outlierthreshold)
+        validDays = markLargeDeviationsByDay(validDays, rs@outlierthreshold)
 
 	# num invalid deviations per day
         deviationsInvalid = invalidDeviationsByDay(validDays)
@@ -137,20 +128,20 @@ for (f in files) {
 	print(paste('Invalid deviations?', deviationsInvalid[1,1]))
 
 	#  save validDays to a CSV files
-	saveCleanData(validDays, outdir, userID, impute, save)
+	saveCleanData(validDays, userID, rs)
 
 
 	######
 	###### PLOTTING
 
-	plotCGM(validDays, outdir, userID, hypothreshold, hyperthreshold)
+	plotCGM(validDays, outdir, userID, rs@hypothreshold, rs@hyperthreshold)
 
 
 	######
 	###### GENERATE VARIABLES
 
 	print(paste("Generating variables for file:", f,", with user ID:", userID))
-	summThis = deriveCharacteristics(validDays, userIDdf, hypothreshold, hyperthreshold)
+	summThis = deriveCharacteristics(validDays, userIDdf, rs)
 
 
 	# add correlation and invalid deviations

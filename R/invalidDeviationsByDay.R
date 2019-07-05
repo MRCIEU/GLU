@@ -36,15 +36,11 @@ invalidDeviationsByDay <- function(validDays) {
 	# for each valid day, calculate the number of invalid deviations
 	for (vd in validDays) {
 
-		# get day and night-time sequences
-		dt = vd[["daytime"]]
-		nt = vd[["nighttime"]]
-
 		# get number of invalid deviations in this day only
-		devVD1 = length(which(dt$deviationLarge == TRUE))
-		devVD2 = length(which(nt$deviationLarge == TRUE))
 
-		devs = devVD1+devVD2
+		raw = getDayGlucoseValues(vd)
+
+		devs = length(which(raw$deviationLarge == TRUE))
 
 		if (devs>0) {
 			hasInvalidDeviations = TRUE

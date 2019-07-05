@@ -18,11 +18,13 @@ time = strptime(time, format='%d/%m/%y %H:%M:%S')
 
 sgReading = c(5,6)
 raw = data.frame(time, sgReading)
+raw$impute = FALSE
 
 rawNoDevs = raw
 rawNoDevs$deviationLarge = FALSE
 
 rawWithDevs = markLargeDeviations(raw)
+
 expect_equal(rawWithDevs, rawNoDevs)
 
 
@@ -34,16 +36,15 @@ expect_equal(rawWithDevs, rawNoDevs)
 
 print('Test 2')
 
-time = genTestTimeSeq(9)
-sgReading = c(5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,11,10,9,8,7,6,5,4,3,2,1,11,1,2,3,4,5,6,7,8,9,10,11,10,9.9,9.8,9.7,9.6,9.5,9.4,9.3,9.2,9.1,11,10)
+time = genTestTimeSeq(12)
+sgReading = c(8.5,8.4,8.3,8.2,8.1,8.0,8.1,8.2,8.3,8.3,8.4,8.5,8.6,8.7,8.6,8.5,8.5,8.6,8.7,8.8,9.0,25,9.0,9.1,9.2,9.3,9.3,9.4,9.5,9.6,9.7,9.8,9.9,10,9.9,9.8,9.7,9.6,9.5,9.4,9.3,9.2,9.1,9.2,9.3,9.3,9.2,9.1,9.2,9.3,9.3,9.2,9.1,9.2,9.3,9.3,9.2,9.1,9.2,9.3)
 raw = data.frame(time, sgReading)
-raw$deviationLarge = rep(FALSE, 45)
+raw$deviationLarge = FALSE
+raw$impute = FALSE
 
 rawWithDevs = markLargeDeviations(raw)
 
-raw$deviationLarge[21] = TRUE
 raw$deviationLarge[22] = TRUE
-raw$deviationLarge[23] = TRUE
 
 expect_equal(rawWithDevs, raw)
 

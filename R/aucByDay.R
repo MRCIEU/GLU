@@ -33,17 +33,15 @@ aucByDay <- function(validDays) {
 	for (vd in validDays) {
 		
 		# sequence of timepoints for this day
-		raw = collateSequence(vd)
 
 		# auc of this day only
-		aucVD = auc(raw)
+		aucVD = auc(getDayGlucoseValues(vd, interp=TRUE))
 
 		# nighttime, daytime aucs
-		aucVDn = auc(raw[which(raw$daytime==FALSE),])
-		aucVDd = auc(raw[which(raw$daytime==TRUE),])
+		aucVDn = auc(getDayGlucoseValues(vd, night=TRUE, interp=TRUE))
+		aucVDd = auc(getDayGlucoseValues(vd, day=TRUE, interp=TRUE))
 
 		aucs = append(aucs, c(aucVD, aucVDn, aucVDd))
-		
 		cnames = append(cnames, c(paste("auc_day", count, sep=""), paste("auc_nt_day", count, sep=""), paste("auc_dt_day", count, sep="")))
 
                 count=count+1

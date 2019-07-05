@@ -18,25 +18,27 @@
 
 
 
-# Returns a list of valid days.
-# A day is defined as a period between nightStart time on two consecutive days (exclusive of the first and exclusive of the second)
+# Returns a participantData object
+# A day is defined as a period between dayPeriodStartTime on adjacent days (exclusive of the first and exclusive of the second)
+# if either nightstart or daystart are the same as dayPeriodStartTime then there is only one day and one night block.
+# if e.g. dayPeriodStartTime is during the daytime period, then there is two day blocks with a night block in the middle.
 # A valid day should have a complete set of CGM epochs; 288 values for medtronic 5 minute data)
 #
-# Each valid day object is a list containing 8 objects:
-# 1. An integer value, the day number
-# 2. A boolean, whether the day is valid or not
-# 3. A daytime data frame - the CGM sequence data for the daytime period of this day
-# 4. A nighttime data frame - the CGM sequence data for the nighttime period of this day
-# 5. Date: day start time
-# 6. Date: day end time
-# 7. Data frame of events
-# 8. Data frame of blood glucose values
-# TODO fix for clocks changing
+# clocks going back: skip the second lot of the duplicated time points
+# clocks going forward: this causes a missing time period that would make the day invalid if using the complete days approach, 
+# but could potentially be imputed.
 
-getDays <- function(raw, nightstart, daystart, epochFrequency) {
+getDays <- function(raw, rs) {
 
-	daystartX = daystart
-	nightstartX = nightstart
+	print('splitting into days ...')
+
+	# all the data for this participant
+	participantData = new("participantData", nightstart=rs@nightstart, daystart=rs@daystart, days=list())
+
+	# firstvalid arg - can be used to use the first time point as the start of a day period
+	# dayPeriodStartTime arg - can be used to use a fixed time, that is the same across people
+	# daytimeStart arg - the start of the daytime part of a day
+	# nighttimeStart arg - the start of the nighttime part of a day
 
 	bg = raw[["bg"]]
 	events = raw[["events"]]
@@ -44,111 +46,214 @@ getDays <- function(raw, nightstart, daystart, epochFrequency) {
 	rawData = raw[["sg"]]
  	rawData$interp = FALSE
 
-	days = list()
-
-	## first time to consider is the first recorded sensor glucose reading (so we have a complete trajectory - i.e. we cannot interpolate before if no previous SG values)
-	idxStart=1
-	timestart = rawData$time[idxStart]
-	timeend = rawData$time[nrow(rawData)]
-
-	##
-	## get day and night start time for this day, assuming night-to-day transition is the day after the day-to-night transition
-
-	# month is zero-based
-	t1str = paste(timestart$mday, "/", timestart$mon+1, "/" , data.table::year(timestart), " ", nightstart$hour, ":", nightstart$min, sep="")
-	t2str = paste(timestart$mday, "/", timestart$mon+1, "/" , data.table::year(timestart), " ", daystart$hour, ":", daystart$min, sep="")
-	thisDayToNight = strptime(t1str, format='%d/%m/%Y %H:%M')
-	thisNightToDay = strptime(t2str, format='%d/%m/%Y %H:%M')
-
-	# if cgm doesn't start until after day-to-night threshold then update thresholds to next day
-	if (rawData$time[idxStart]>thisDayToNight) {
-		thisDayToNight = incrementDay(thisDayToNight)
+	if (length(which(!is.na(rawData$sgReading)))==0) {
+		return(NULL)
 	}
 
-	# if cgm doesn't start until after night-to-day threshold then update thresholds to next day
-	if (rawData$time[idxStart]>thisNightToDay) {
-		thisNightToDay = incrementDay(thisNightToDay)
-        }
+	# get the first date/time of our data
+	dayPeriodStart = getFirstDayPeriodStart(rawData, rs)
+
+	if (dayPeriodStart < rawData$time[1]) {
+		# day period starts before start of person's data so add this timepoint to the start
 
 
-	nighttime=NULL
+		# this is a hack TODO FIXME
+		if (rs@firstvalid == TRUE) {
+			#newRow = data.frame(time=dayPeriodStart,sgReading=rawData$sgReading[1],impute='',interp=FALSE)
+			rawData$time[1] = dayPeriodStart
+			## TODO if firstValid then dayPeriod start is the next whole minute after the first time point
+			## TODO interpolate sg so that it is correct
+		}
+		else {
+			newRow = data.frame(time=dayPeriodStart,sgReading=NA,impute='',interp=FALSE)
+			#newRow$time = as.POSIXlt(newRow$time)
+			rawData = rbind(newRow, rawData)
+		}
+	}
+	# increment dayPeriodStart
+        dayPeriodStart = incrementDay(dayPeriodStart)
+
+	## process each timepoint in accelerometer day, interpolating between time points and splitting into day periods
+
 	countDays = 1
 	currentMinutes = NULL
-	daystart=thisDayToNight
+
+	# idx of last timepoint - usually idxThis-1, except where the clocks went back (so we skip the duplicated time points)
+	idxPrev = 1
 
 	# process each time point in cgm data in turn
 	for (idxThis in 2:nrow(rawData)) {
-		timePrev=rawData$time[idxThis-1]
+
+		timePrev=rawData$time[idxPrev]
 		timeThis=rawData$time[idxThis]
 
-		#for each minute between previous timepoint (inclusive) and current time point (exclusive)
-		minutesForBlock = getMinutesForBlock(rawData[idxThis-1,], rawData[idxThis,], epochFrequency)
-		# check if we passed night-to-day or day-to-night thresholds
-		if (length(which(minutesForBlock$time == thisNightToDay)) >0) {
-#			print('night-to-day')
-
-			# split minutes block
-			idxThresh = which(minutesForBlock$time == thisNightToDay)
-			nightRemaining = minutesForBlock[1:idxThresh,]
-			dayStart = minutesForBlock[idxThresh:nrow(minutesForBlock),]
-			
-			# set nighttime and current block as start of daytime
-			nighttime = rbind(currentMinutes, nightRemaining)
-			currentMinutes = dayStart
-
-			# find next night-to-day threshold
-			thisNightToDay = incrementDay(thisNightToDay)
-		}
-		else if (length(which(minutesForBlock$time == thisDayToNight)) >0) {
-#			print('day-to-night')
-
-			# split minutes block (days end and start on the same minute)
-                        idxThresh = which(minutesForBlock$time == thisDayToNight)
-                        dayRemaining = minutesForBlock[1:idxThresh,]
-                        nightStart = minutesForBlock[idxThresh:nrow(minutesForBlock),]
-
-			# set daytime and current block as start of nighttime
-			daytime = rbind(currentMinutes, dayRemaining)
-			currentMinutes = nightStart
-
-			###
-                        ### check day is valid and save if it is
-
-                        vdCheck = isValidDay(nighttime, daytime, nightstartX, daystartX)
-                        newDay = list(daytime=daytime, nighttime=nighttime, dayidx=countDays, validday=vdCheck, events=events[which(events$time>=daystart & events$time<thisDayToNight),], daystart=daystart, dayend=thisDayToNight, bg=bg[which(bg$time>=daystart & bg$time<thisDayToNight),])
-                        days[[countDays]] = newDay
-                        if(is.null(nighttime)) {
-                                print(paste("valid day: ", vdCheck, " (no nighttime), ", countDays,": ", daytime$time[1], " - ", daytime$time[nrow(daytime)]," (daytime starts at ", daytime$time[1], ")", sep=""))
-                        }
-                        else {
-                              	print(paste("valid day: ", vdCheck, ", ", countDays,": ", nighttime$time[1], " - ", daytime$time[nrow(daytime)]," (daytime starts at ", daytime$time[1], ")", sep=""))
-                        }
-
-                        # transition to new day
-                        nighttime = NULL
-                        daystart=thisDayToNight
-                        thisDayToNight = incrementDay(thisDayToNight)
-                        countDays = countDays+1
-
+                if (timePrev >= timeThis) {
+                        # go to next time point until it is after the last time point
+                        print('before last time point, probably clocks went back (skipping)...')
+                        next
                 }
-		else {
-			# we didn't pass thresholds so add minutes to current day part
-		
-#			print('no threshold passed')
 
-			# add current minute to current block
-                        if (is.null(currentMinutes)) {
-                                currentMinutes = minutesForBlock
-                        }
-                        else {
-			    	currentMinutes = rbind(currentMinutes, minutesForBlock)
-                      	}
+		#for each minute between previous timepoint (inclusive) and current time point (exclusive)
+		minutesForBlock = getMinutesForBlock(rawData[idxPrev,], rawData[idxThis,], rs@epochfrequency)
+
+		## set day / night in block
+		minutesForBlock = setDayAndNight(minutesForBlock, rs)
+
+		## combine with current minutes
+		currentMinutes = rbind(currentMinutes, minutesForBlock)
+
+		## check new day
+		while (length(which(currentMinutes$time == dayPeriodStart)) >0) {
+
+			idxThresh = min(which(currentMinutes$time == dayPeriodStart))
+ 			dayPeriod = currentMinutes[1:idxThresh,]
+
+			# store new day			
+			newDay = makeNewDay(dayPeriod, events, bg, countDays)
+
+			# day is null if clocks change and num minutes is not 1441
+			if (!is.null(newDay)) {
+				participantData@days[[countDays]] = newDay
+				countDays = countDays+1
+			}
+
+			# set current minutes as the remaining minutes not in the day just created
+			currentMinutes = currentMinutes[(idxThresh):nrow(currentMinutes),]
+
+			# increment dayPeriodStart
+			dayPeriodStart = incrementDay(dayPeriodStart)
 
 		}
-
+		idxPrev = idxThis
 	}
 
-	return(days)
+	## if there is remaining data then make a final day
+	if (nrow(currentMinutes) > 1) {
+
+		## make block for rest of this last day
+		lastTimePoint = data.frame(time=dayPeriodStart,sgReading=NA,impute='', interp=FALSE, deviationLarge=FALSE)
+
+		minutesForBlock = getMinutesForBlock(rawData[nrow(rawData),], lastTimePoint, rs@epochfrequency)
+
+		# add last timepoint too as minutesForBlock is exclusive of end time point
+		#minutesForBlock = rbind(minutesForBlock, lastTimePoint)
+
+		minutesForBlock = setDayAndNight(minutesForBlock, rs)
+		dayPeriod = rbind(currentMinutes, minutesForBlock)
+
+		newDay = makeNewDay(dayPeriod, events, bg, countDays)
+		if (!is.null(newDay)) {
+			participantData@days[[countDays]] = newDay
+		}                
+	}
+
+	return(participantData)
+}
+
+
+
+makeNewDay <-function(dayPeriod, events, bg, dayidx) {
+
+	eventsForDay = events[which(events$time >= dayPeriod$time[1] & events$time < dayPeriod$time[nrow(dayPeriod)]),]
+	bgsForDay = bg[which(bg$time >= dayPeriod$time[1] & bg$time < dayPeriod$time[nrow(dayPeriod)]),]
+
+
+	# make empty data frames if these are null
+	if (is.null(eventsForDay)) {
+		eventsForDay = data.frame(time=c(), event=c())
+	}
+	if (is.null(bgsForDay)) {
+		bgsForDay = data.frame(time=c(), bgReading=c())
+	}
+	
+	# check if day is valid
+	vdCheck = isValidDay(dayPeriod)
+
+	# error when day doesn't have 1441 values (if clocks change)
+	newDay = tryCatch({
+		newDay = new('day', glucose=dayPeriod, dayidx=dayidx, validday=vdCheck, events=eventsForDay, bg=bgsForDay)
+	}, error = function(e) {
+		print('Invalid day')
+		print(e)
+		return(NULL)
+	}, finally = {
+	})
+
+	if(!is.null(newDay)) {
+		print(paste0("valid day: ", vdCheck, ", ", dayidx,": ", dayPeriod$time[1], " - ", dayPeriod$time[nrow(dayPeriod)]))
+	}
+
+	return(newDay)
+
+}
+
+# get the first date/time of our data, i.e. the start time of the first day
+# if firstvalid is set then use the first sg reading timepoint as the start time
+# else use the latest value of the starttime arg, such that it is at the latest on the first valid sg reading time point
+# this is so that the first bit of data before the dayPeriodStartTime is included as a day, in case the missing bit can be imputed
+getFirstDayPeriodStart <- function(rawData, rs) {
+
+	if (rs@firstvalid == TRUE) {
+                # first timepoint is first valid value
+                firstTime = rawData$time[1]
+
+		# but rounded to nearest minute
+		t2str = paste0(firstTime$mday, "/", firstTime$mon+1, "/" , data.table::year(firstTime), " ", firstTime$hour, ":", firstTime$min)
+                dayPeriodStart = strptime(t2str, format='%d/%m/%Y %H:%M')
+
+		# increment minute so it is the first whole minute after the first time point
+		if (dayPeriodStart < firstTime) {
+			dayPeriodStart = as.POSIXlt(dayPeriodStart + 60)
+		}
+
+        }
+        else {
+
+                # first timepoint is previous day period start time
+
+		firstTime = rawData$time[1]		
+		t2str = paste0(firstTime$mday, "/", (firstTime$mon+1), "/" , data.table::year(firstTime), " ", rs@dayPeriodStartTime$hour, ":", rs@dayPeriodStartTime$min)
+        	dayPeriodStart = strptime(t2str, format='%d/%m/%Y %H:%M')
+
+        	if (rawData$time[1]<dayPeriodStart) {
+        	        dayPeriodStart = incrementDay(dayPeriodStart, -1)
+        	}
+
+       	}
+
+	dayPeriodStart = as.POSIXlt(dayPeriodStart)
+
+	return(dayPeriodStart)
+
+}
+
+setDayAndNight <- function(minutesForBlock, rs) {
+	
+	minutesForBlock$isnight = FALSE
+
+	dtHourThresh = rs@daystart$hour
+	dtMinThresh = rs@daystart$min
+	ntHourThresh = rs@nightstart$hour
+        ntMinThresh = rs@nightstart$min
+
+	# nighttime: before daytime hour
+	ix = which(minutesForBlock$time$hour < dtHourThresh)
+	minutesForBlock$isnight[ix] = TRUE
+
+	# nighttime: in daytime hour but before daytime min
+        ix = which(minutesForBlock$time$hour == dtHourThresh & minutesForBlock$time$min < dtMinThresh)
+        minutesForBlock$isnight[ix] = TRUE
+	
+	# nighttime: after nighttime hour
+        ix = which(minutesForBlock$time$hour >= ntHourThresh)
+        minutesForBlock$isnight[ix] = TRUE
+
+        # nighttime: in nighttime hour but after nighttime min
+        ix = which(minutesForBlock$time$hour == ntHourThresh & minutesForBlock$time$min >= ntMinThresh)
+        minutesForBlock$isnight[ix] = TRUE
+
+	return(minutesForBlock)
+
 }
 
 
@@ -158,17 +263,25 @@ getMinutesForBlock <- function(blockStart, blockEnd, epochFrequency) {
 
 	timePrev = blockStart$time
 	timeThis = blockEnd$time
+	timePrev = as.POSIXlt(timePrev)
+	timeThis = as.POSIXlt(timeThis)
 
 	currentMinutes = NULL
 
         # start current block
         timeMinute = strptime(paste(timePrev$mday, "/", timePrev$mon+1, "/" , data.table::year(timePrev), " ", timePrev$hour, ":", timePrev$min, sep=""), format='%d/%m/%Y %H:%M')
-        if (timeMinute<timePrev) {
+
+	# make sure next minute epoch is after the previous time point
+	timeDiffMins = as.numeric(difftime(timeMinute,timePrev, units="mins"))
+        if (timeDiffMins < 0) {
  		timeMinute = as.POSIXlt(timeMinute + 60)
         }
 
+	# see if current epoch is before end of this block
+	timeDiffMins = as.numeric(difftime(timeThis,timeMinute, units="mins"))
+
         # if end time is a round minute it is part of the next block
-        while (timeMinute < timeThis) {
+        while (timeDiffMins >= 0) {
 
         	##
         	## get new interpolated row for this minute
@@ -188,21 +301,26 @@ getMinutesForBlock <- function(blockStart, blockEnd, epochFrequency) {
                 }
 
 		timeMinute = as.POSIXlt(timeMinute+60)
-
+		timeDiffMins = as.numeric(difftime(timeThis,timeMinute, units="mins"))
 	}
 
 	if (!is.null(currentMinutes)) {
 		currentMinutes$time = as.POSIXlt(currentMinutes$time)
 	}
+	else {
+              	timeMinute = strptime(paste(timeThis$mday, "/",timeThis$mon+1, "/" , data.table::year(timeThis), " ", timeThis$hour, ":", timeThis$min, sep=""), format='%d/%m/%Y %H:%M')
+                currentMinutes = data.frame(time=timeMinute, sgReading=NA, impute='', interp=FALSE, deviationLarge=FALSE)
+                currentMinutes$time = as.POSIXlt(currentMinutes$time)
+        }
 
 	return(currentMinutes)
 
 }
 
 
-incrementDay <- function(time) {
+incrementDay <- function(time, n=1) {
 
-	timeNew = as.POSIXlt(time + 60*60*24)
+	timeNew = as.POSIXlt(time + n*60*60*24)
 
 	## hour changes if the clocks change
 	if (timeNew$hour!=time$hour) {
@@ -306,37 +424,12 @@ insertRow <- function(rawData, idx, newrowInterp) {
 
 
 
-isValidDay <- function(nighttime, daytime, nightstart, daystart) {
+isValidDay <- function(dayPeriod) {
 
+	# does the day have NAs
+	noNAs = length(which(is.na(dayPeriod$sgReading)))==0 
 
-	isvd=FALSE
-	if (!is.null(nighttime)) {
-
-		# does night start at right time
-		thisnightstart = nighttime$time[1]
-		isvnightstart = nightstart$hour == data.table::hour(thisnightstart) & nightstart$min == thisnightstart$min
-
-		# does day start at right time
-		thisdaystart = daytime$time[1]
-                isvdaystart = daystart$hour == data.table::hour(thisdaystart) & daystart$min == thisdaystart$min
-
-		# does night end at right time
-                thisnightend = nighttime$time[nrow(nighttime)]
-                isvnightend = daystart$hour == data.table::hour(thisnightend) & daystart$min == thisnightend$min
-
-                # does day end at right time
-                thisdayend = daytime$time[nrow(daytime)]
-                isvdayend = nightstart$hour == data.table::hour(thisdayend) & nightstart$min == thisdayend$min
-
-
-		# does the day have NAs
-		dayHasNAs = length(which(is.na(nighttime$sgReading)))==0 & length(which(is.na(daytime$sgReading)))==0
-
-		isvd = dayHasNAs & isvnightstart & isvdaystart & isvnightend & isvdayend
-
-	}
-
-	return(isvd)
+	return(noNAs)
 }
 
 

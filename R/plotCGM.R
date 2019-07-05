@@ -41,7 +41,7 @@ plotCGM <- function(validDays, dir, userID, hypothreshold, hyperthreshold) {
 	        ## collate valid day into a single sequence
 	        #############
 
-		rawV = collateSequence(vd)
+		rawV = vd@glucose
 	
 		#############
 		## plot histogram
@@ -105,7 +105,7 @@ plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 	while(startx <=nrow(rawV)) {
 
 		# set last row of this current segment
-		if (rawV$impute[startx] == "") {
+		if (rawV$impute[startx] == "" | rawV$impute[startx] == "NO") {
 			segcolx = cbind(segcolx, '#990099')
 	        }
                 else {
@@ -168,9 +168,9 @@ plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 
 
 	## plot meal times - square
-	events = vd[["events"]]
+	events = vd@events
 
-	if (!is.null(events)) {
+	if (!is.null(events) & nrow(events)>0) {
 
 		events$time = as.POSIXct(events$time)
 
@@ -205,8 +205,8 @@ plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 	# max y value is highest of sg values and bg values and at least 10
 	maxY = max(rawV$sgReading, na.rm = TRUE)
 
-	bgs = vd[["bg"]]
-	if (!is.null(bgs)) {
+	bgs = vd@bg
+	if (!is.null(bgs) & nrow(bgs)>0) {
 
 		bgs$time = as.POSIXct(bgs$time)
 
@@ -234,7 +234,7 @@ plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 	p=p+scale_y_continuous(limits = c(minY, maxY))
 
 
-	ggsave(plot=p, file=paste(dir, '/plots/cgm-day',vd$dayidx,'-',userID,'.pdf', sep=""), device="pdf", width=7,height=3)
+	ggsave(plot=p, file=paste(dir, '/plots/cgm-day',vd@dayidx,'-',userID,'.pdf', sep=""), device="pdf", width=7,height=3)
 
 
 }

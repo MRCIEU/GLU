@@ -33,12 +33,13 @@ eventStatisticsByDay <- function(validDays) {
         count=1
         for (vd in validDays) {
 
-		raw = collateSequence(vd) 
-		events = vd[["events"]]
+		events = vd@events
 
 		if (is.null(events)) {
 			next
 		}
+
+		raw = getDayGlucoseValues(vd)
 
                 # event (meals, exercise, medication) statistics of this valid day only
                 mtVD = mealtimeStatistics(events, raw)

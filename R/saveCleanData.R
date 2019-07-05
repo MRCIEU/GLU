@@ -20,9 +20,9 @@
 
 # Saves cleaned CGM data to file.
 # This includes the interpolated timepoints that mark the precise start and end of each day
-saveCleanData <- function(validDays, outdir, userID, impute, save=TRUE) {
+saveCleanData <- function(validDays, userID, rs) {
 
-	if (save == TRUE) {
+	if (rs@save == TRUE) {
 
 	print("Saving clean data ...")
 
@@ -31,7 +31,7 @@ saveCleanData <- function(validDays, outdir, userID, impute, save=TRUE) {
 	if (length(validDays)>=1) {
 		for (vd in validDays) {
 
-			vday = collateSequence(vd)
+			vday = vd@glucose
 
 			if (first == TRUE) {
 				rawValid = vday
@@ -45,12 +45,16 @@ saveCleanData <- function(validDays, outdir, userID, impute, save=TRUE) {
 	}
 
 	namePrefix = userID
-	if (impute==TRUE) {
-                namePrefix = paste(namePrefix, '-imputed', sep='')
+	if (rs@imputeApproximal==TRUE) {
+                namePrefix = paste(namePrefix, '-impute-approximal', sep='')
+        }
+	else if (rs@imputeOther==TRUE) {
+                namePrefix = paste(namePrefix, '-impute-other', sep='')
         }
 
+
         # save clean data
-        write.table(rawValid, file=paste(outdir, "/validdays/cgmValidDays", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE, na="")
+        write.table(rawValid, file=paste(rs@outdir, "/validdays/cgmValidDays", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE, na="")
 
 	}
 

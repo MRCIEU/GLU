@@ -20,11 +20,7 @@
 
 # Calculate standardised glycemic variability percentage (sGVP) of SG readings in raw.
 # Returns the sGVP value.
-SGVP <- function(raw, stdx) {
-
-	# get only rows with SG readings
-	sgIdx = which(!is.na(raw$sgReading))
-	data = raw[sgIdx,]
+SGVP <- function(data, stdx) {
 
 	if (stdx==TRUE) {
 		# standardise sequence (x - median)/MAD
@@ -35,6 +31,7 @@ SGVP <- function(raw, stdx) {
 		data$sgReading = (data$sgReading - mediansg)/madsg
 	}
 
+
 	# for consecutive pair of measurements calculate the GVP for this part
 	sgvp = 0
 	overallTimeDiffMins = 0
@@ -44,18 +41,18 @@ SGVP <- function(raw, stdx) {
 		# don't include variation between non-imputed and imputed regions, and left and right parts of imputed regions
 		if (data$impute[idx] == data$impute[idx-1]) {
 
-			timeDiffMins = as.numeric(difftime(data$time[idx], data$time[idx-1], units="mins"))		
+			timeDiffMins = as.numeric(difftime(data$time[idx], data$time[idx-1], units="mins"))
 			
-			sgvpThis = 0
-			sgvpThis = sqrt((data$sgReading[idx-1] - data$sgReading[idx])^2 + timeDiffMins^2)
+			# sometimes a day might have two night/day segments if the start of the day period isn't exactly on the day-night or night-day boundary
+			if (timeDiffMins == 1) {
+				sgvpThis = sqrt((data$sgReading[idx-1] - data$sgReading[idx])^2 + timeDiffMins^2)
+				sgvp = sgvp + sgvpThis
 	
-			sgvp = sgvp + sgvpThis
-
-			# need to add here as if imputed segment then it is skipped
-			overallTimeDiffMins = overallTimeDiffMins + timeDiffMins
+				# need to add here as if imputed segment then it is skipped
+				overallTimeDiffMins = overallTimeDiffMins + timeDiffMins
+			}
 		}
 	}
-
 	sgvp = sgvp/overallTimeDiffMins
 
 	# rescaling so it's a % of the minimum length of the line

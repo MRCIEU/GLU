@@ -19,39 +19,117 @@
 
 # day input is an invalid day (with some missingness)
 # Determines if imputation is possible depending on amount of missingness
-# impute by matching cgm before and after missingness with other sequence without missingness
-impute <- function(day) {
+# impute approximal: impute by matching cgm before and after missingness with other sequence without missingness
+# imput other: impute by finding a complete time period at the same time on another day
+impute <- function(day, alldays, nightstart, imputeOther=FALSE) {
 
+	print(paste("IMPUTE day ", day@dayidx, sep=""))
 
-	# get combined sequence - we work on this but then update to the particular days
-	combined = collateSequence(day)
-
-	print(paste("IMPUTE day ", day[["dayidx"]], sep=""))
-	dt = day[["daytime"]]
-	nt = day[["nighttime"]]
-
-	# we can't impute days with no nighttime - too much missingness
-	if (is.null(nt)) {
-		print('No nighttime, so cannot impute.')
-		return(day)
-	}
-
-	numMissing = length(which(is.na(nt$sgReading))) + length(which(is.na(dt$sgReading)))
-	print(paste('num missing:', numMissing))
+	numMissing = length(which(is.na(day@glucose$sgReading)))
 	# TODO maybe there are some cases where we can't impute - add here?
 
 	if(numMissing <= 6*60) {
 		# only	impute if there	is enough data (at most 6 hrs missing)
 
-		dayx = doImpute(day, combined)
+		if (imputeOther == TRUE) {
+			dayx = doImputeOtherDay(day, alldays, nightstart)
+		}
+		else {
+			dayx = doImpute(day)
+		}
 
 		# if imputation has been performed then update this day and set as valid
 		if (!is.null(dayx)) {
-			dayx[["validday"]] = TRUE
+			dayx@validday = TRUE
 			day = dayx
-			print(paste('************************************ Day ', day[["dayidx"]], ' imputed, now valid', sep=""))
+			print(paste('************************************ Day ', day@dayidx, ' imputed, now valid', sep=""))
 		}
 	}
+	else {
+		print(paste0('More than 6 hours missing (', numMissing, ' minutes) so cannot impute.'))
+	}
+
+	return(day)
+}
+
+
+
+
+doImputeOtherDay <- function(day, alldays, nightstart) {
+
+	day@glucose$impute = "NO"
+
+	missingBlocks = getMissingBlocks(day@glucose)
+
+	print("DO IMPUTATION FOR THIS DAY")
+	for (b in missingBlocks) {
+	
+		print(paste('block: ', b[["startdate"]], ' - ', b[["enddate"]]))
+
+		# find same time on different day
+		startDate = b[["startdate"]]
+		endDate = b[["enddate"]]
+
+		candidateDays = NULL
+		candidateSeqs = NULL
+		for (d in alldays) {
+			dx = d@glucose
+
+			ixStart = which(dx$time$hour == startDate$hour & dx$time$min == startDate$min)
+			ixEnd = which(dx$time$hour == endDate$hour & dx$time$min == endDate$min)
+
+			if (length(ixStart)>0 & length(ixEnd)>0) {
+				cSeq = dx$sgReading[min(ixStart):min(ixEnd)]
+				
+				if (is.null(candidateSeqs)) {
+					candidateSeqs = data.frame(cSeq)
+					candidateDays = data.frame(d@dayidx)
+				}
+				else {
+					candidateSeqs = cbind(candidateSeqs, cSeq)
+					candidateDays = cbind(candidateDays, d@dayidx)
+				}
+			}
+
+		}
+
+		# restrict to only seqs with no missingness
+		ix = which(colSums(is.na(candidateSeqs))==0)
+		candidateSeqs = candidateSeqs[,ix, drop=FALSE]
+		candidateDays = candidateDays[,ix, drop=FALSE]
+		
+		# choose a sequence and impute
+		if (!is.null(candidateSeqs) & ncol(candidateSeqs)>0) {
+			
+			randDayIdx = runif(1, 1, ncol(candidateSeqs))
+			seq = candidateSeqs[,randDayIdx]
+			dayidx = candidateDays[,randDayIdx]
+
+			print('Found sequence on other day')
+			day = updateDayOther(day, b, seq, dayidx)
+
+		}
+		else {
+			# could not find block in another day to use for imputation
+			# so cannot impute this day
+			print('Could not find sequence on other day')
+			return(NULL)
+		}
+
+	}
+
+	return(day)
+
+}
+
+
+updateDayOther <- function(day, b, seq, dayidx) {
+
+	# update missing block with seq
+	idxstart = which(day@glucose$time == b[["startdate"]])
+	idxend = which(day@glucose$time == b[["enddate"]])
+	day@glucose$sgReading[idxstart:idxend] = seq
+        day@glucose$impute[idxstart:idxend] = paste0("OTHER", dayidx)
 
 	return(day)
 }
@@ -61,13 +139,12 @@ doImpute <- function(day, combined) {
 	dt = day[["daytime"]]
         nt = day[["nighttime"]]
 
-	dt$impute = ""
-	nt$impute = ""
+	dt$impute = "NO"
+	nt$impute = "NO"
 
 	# if there are missing values at the start or end of the sequence then we def cannot impute imbetween
 	#if (is.null(raw) | is.na(raw$sgReading[1]) | is.na(raw$sgReading[nrow(raw)])) {
 	if (is.na(combined$sgReading[1]) | is.na(combined$sgReading[nrow(combined)])) {
-#		print("XXXX")
 		return(NULL)
 	}
 	
@@ -94,45 +171,10 @@ doImpute <- function(day, combined) {
 
 			# replace missing block with identified non-missing block
 			
-			if (b[["enddate"]] <= nt$time[nrow(nt)]) {
-				# block is in the night so update nighttime sequence
-				idxstart = which(nt$time == b[["startdate"]])
-				idxend = which(nt$time == b[["enddate"]])
-				nt$sgReading[idxstart:idxend] = seq
-				nt$impute[idxstart:(idxstart-1+floor(length(seq)/2))] = "LEFT"
-				nt$impute[(idxstart-1+ceiling(length(seq)/2)):idxend] = "RIGHT"
-			}
-			else if (b[["startdate"]] >= dt$time[1]) {
-				# block	is in the day so update nighttime sequence
-				idxstart = which(dt$time == b[["startdate"]])
-                                idxend = which(dt$time == b[["enddate"]])
-                                dt$sgReading[idxstart:idxend] = seq
-				dt$impute[idxstart:(idxstart-1+floor(length(seq)/2))] = "LEFT"
-                                dt$impute[(idxstart-1+ceiling(length(seq)/2)):idxend] = "RIGHT"
-			}
-			else {
-				# block	crosses the night/day boundary so update both night and day sequences
-				
-				# night time part
-				idxstart = which(nt$time == b[["startdate"]])
-                                idxend = nrow$nt
-				nt$sgReading[idxstart:idxend] = seq[idxend - idxstart + 1]
-				nt$impute[idxstart:(idxstart-1+floor(length(seq)/2))] = "LEFT"
-                                nt$impute[(idxstart-1+ceiling(length(seq)/2)):idxend] = "RIGHT"
-
-				# day time part
-				idxstart = 1
-				idxend = which(dt$time == b[["enddate"]])
-                                dt$sgReading[idxstart:idxend] = seq[length(seq) - (idxend-idxstart+1):length(seq)]
-				dt$impute[idxstart:(idxstart-1+floor(length(seq)/2))] = "LEFT"
-                                dt$impute[(idxstart-1+ceiling(length(seq)/2)):idxend] = "RIGHT"
-
-			}
+			day = updateDay(day, b, seq)
 
 		}
 
-		day[["nighttime"]] = nt
-                day[["daytime"]] = dt
                 return(day)
 
 	}
@@ -142,6 +184,22 @@ doImpute <- function(day, combined) {
 	}
 
 }
+
+
+updateDay <- function(day, b, seq) {
+	
+	# update missing block with seq
+	idxstart = which(day@glucose$time == b[["startdate"]])
+	idxend = which(day@glucose$time == b[["enddate"]])
+
+	day@glucose$sgReading[idxstart:idxend] = seq
+	day@glucose$impute[idxstart:(idxstart-1+floor(length(seq)/2))] = "LEFT"
+	day@glucose$impute[(idxstart-1+ceiling(length(seq)/2)):idxend] = "RIGHT"
+
+        return(day)
+
+}
+
 
 fillWithNearby <- function(block, daycombined) {
 

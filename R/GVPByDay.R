@@ -29,12 +29,12 @@ GVPByDay <- function(validDays) {
 	count=1
 	for (vd in validDays) {
 
-		raw = collateSequence(vd)
+		raw = getDayGlucoseValues(vd, interp=TRUE)
 
 		# GVP for whole day, nighttime and daytime GVP
 		gvpVD = SGVP(raw, FALSE)
-		gvpVDn = SGVP(raw[which(raw$daytime==FALSE),], FALSE)
-                gvpVDd = SGVP(raw[which(raw$daytime==TRUE),], FALSE)
+		gvpVDn = SGVP(getDayGlucoseValues(vd, night=TRUE, interp=TRUE), FALSE)
+		gvpVDd = SGVP(getDayGlucoseValues(vd, day=TRUE, interp=TRUE), FALSE)
 
 		gvps = append(gvps, c(gvpVD, gvpVDn, gvpVDd))
 
@@ -49,11 +49,11 @@ GVPByDay <- function(validDays) {
 
 	# '^' is needed so it doesn't match SGVP..
 	gvpAv = meanAcrossDays("^GVP_day", res)
-        gvpAvN = meanAcrossDays("^GVP_nt_day", res)
-        gvpAvD = meanAcrossDays("^GVP_dt_day", res)
+	gvpAvN = meanAcrossDays("^GVP_nt_day", res)
+	gvpAvD = meanAcrossDays("^GVP_dt_day", res)
 
 	othervars = c(gvpAv, gvpAvN, gvpAvD)
-  	othervars = rbind(othervars)
+	othervars = rbind(othervars)
 	colnames(othervars) = c("meanGVPPerDay", "meanGVPPerDay_nt","meanGVPPerDay_dt")
 	res = cbind(res, othervars)
 

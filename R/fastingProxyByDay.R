@@ -31,9 +31,11 @@ fastingProxyByDay <- function(validDays) {
 
 	# for each valid day, calculate the auc
 	for (vd in validDays) {
+
+		nt = getDayGlucoseValues(vd, night=TRUE)
 		
 		# nocturnal mean of 3 lowest consecutive values of this day only
-		noctVD = fastingProxy(vd$nighttime)
+		noctVD = fastingProxy(nt)
 		nocts = append(nocts, noctVD)
 
 		cnames = append(cnames, paste("fastingproxy_day", count, sep=""))

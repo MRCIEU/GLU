@@ -2,7 +2,7 @@
 
 library("testthat")
 source("../invalidDeviationsByDay.R")
-source("../collateSequence.R")
+source("../classes.R")
 source("genTestTimeSeq.R")
 
 print('invalidDeviationsByDay')
@@ -14,21 +14,15 @@ print('invalidDeviationsByDay')
 
 print('Test 1')
 
-timeBoth = genTestTimeSeq(30)
+time = genTestTimeSeq(30)
+sgReading = c(rep(5,times=30))
+glucose = data.frame(time, sgReading)
+glucose$deviationLarge = FALSE
 
-sgReading = c(rep(5,times=15))
+#### make day object
+newDay = new('day', glucose=glucose, dayidx=1, validday=TRUE, events=data.frame(), bg=data.frame())
 
-time = timeBoth[1:15]
-nighttime = data.frame(time, sgReading)
-time = timeBoth[16:30]
-daytime = data.frame(time, sgReading)
-
-daytime$deviationLarge = FALSE
-nighttime$deviationLarge = FALSE
-
-newDay = list(daytime=daytime, nighttime=nighttime, dayidx=1, valid=TRUE, bg=NULL)
 vds = list(newDay, newDay)
-
 
 inv = invalidDeviationsByDay(vds)
 
@@ -42,27 +36,19 @@ expect_equal(inv[1,1], FALSE)
 
 print('Test 2')
 
-timeBoth = genTestTimeSeq(30)
+time = genTestTimeSeq(30)
+sgReading = c(rep(5,times=30))
+glucose = data.frame(time, sgReading)
+glucose$deviationLarge = FALSE
 
-sgReading = c(rep(5,times=15))
-
-time = timeBoth[1:15]
-nighttime = data.frame(time, sgReading)
-time = timeBoth[16:30]
-daytime = data.frame(time, sgReading)
-
-daytime$deviationLarge = FALSE
-nighttime$deviationLarge = FALSE
-
-newDay = list(daytime=daytime, nighttime=nighttime, dayidx=1, valid=TRUE, bg=NULL)
+newDay = new('day', glucose=glucose, dayidx=1, validday=TRUE, events=data.frame(), bg=data.frame())
 
 
-## day 2 has 2 invalid timepoint in the nighttime
-nighttimeD2 = nighttime
-nighttimeD2$deviationLarge[4] = TRUE
-nighttimeD2$deviationLarge[10] = TRUE
-newDay2 = list(daytime=daytime, nighttime=nighttimeD2, dayidx=2, valid=TRUE, bg=NULL)
+## day 2 has 2 invalid timepoints
 
+glucose$deviationLarge[4] = TRUE
+glucose$deviationLarge[10] = TRUE
+newDay2 = new('day', glucose=glucose, dayidx=1, validday=TRUE, events=data.frame(), bg=data.frame())
 
 vds = list(newDay, newDay2)
 

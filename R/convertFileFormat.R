@@ -18,23 +18,23 @@
 
 
 # preprocessing for three specific CGM data formats from: Medtronic ipro2, Dexcom G2, and Abbott Freestyle Libre
-convertFileFormat <- function(dirIn, filename, dirOut, device=0) {
+convertFileFormat <- function(filename, rs) {
 
 	print("converting file format ...")
 
-	inFile = paste0(dirIn, '/', filename)
-	outFile = paste0(dirOut, '/', filename)
+	inFile = paste0(rs@indir, '/', filename)
+	outFile = paste0(rs@outdir, '/', filename)
 
-	if (device == 0) {
+	if (rs@device == 0) {
 		convertFileMedtronic(inFile, outFile, filename)
 	   }
-	else if (device == 1) {
+	else if (rs@device == 1) {
 		convertFileDexcom(inFile, outFile, filename)
 	   }
-	else if (device == 2) {
+	else if (rs@device == 2) {
 		convertFileAbbotFreestyleLibre(inFile, outFile, filename)
 	   }
-	else if (device == 3) {
+	else if (rs@device == 3) {
 		## already in correct format
 	   }
 

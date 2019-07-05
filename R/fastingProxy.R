@@ -29,9 +29,9 @@ fastingProxy <- function(raw) {
 	# get position 1-30, for the 30 consecutive values at each idx
 	# each row has columns 1-30 for each index starting at the row (and some NAs if <30 after this index in sequence)
 	raw$noct1 = raw$sgReading
-
 	colnames=c("noct1")
 
+	# create data frame with 30 columns so that each row corresponds to a particular 30 minute block in the night-time
 	for (i in 2:30) {
 		colname=paste("noct",i,sep='')
 
