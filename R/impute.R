@@ -134,21 +134,17 @@ updateDayOther <- function(day, b, seq, dayidx) {
 	return(day)
 }
 	
-doImpute <- function(day, combined) {
+doImpute <- function(day) {
 
-	dt = day[["daytime"]]
-        nt = day[["nighttime"]]
-
-	dt$impute = "NO"
-	nt$impute = "NO"
+	day@glucose$impute = "NO"
 
 	# if there are missing values at the start or end of the sequence then we def cannot impute imbetween
 	#if (is.null(raw) | is.na(raw$sgReading[1]) | is.na(raw$sgReading[nrow(raw)])) {
-	if (is.na(combined$sgReading[1]) | is.na(combined$sgReading[nrow(combined)])) {
+	if (is.na(day@glucose$sgReading[1]) | is.na(day@glucose$sgReading[nrow(day@glucose)])) {
 		return(NULL)
 	}
 	
-	missingBlocks = getMissingBlocks(combined)
+	missingBlocks = getMissingBlocks(day@glucose)
 
 	# largest missing block
 	largestBlock = getLargestBlock(missingBlocks)
@@ -163,7 +159,7 @@ doImpute <- function(day, combined) {
 			print(paste('block: ', b[["startdate"]], ' - ', b[["enddate"]]))
 			# find sequence at similar time with similar CGM summary statistics for adjacent hour (before and after)
 
-			seq = fillWithNearby(b, combined)
+			seq = fillWithNearby(b, day@glucose)
 			if (is.null(seq)) {
 				# not enough nearby data to use for imputing
 				return(NULL)
