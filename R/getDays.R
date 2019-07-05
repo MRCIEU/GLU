@@ -33,7 +33,7 @@ getDays <- function(raw, rs) {
 	print('splitting into days ...')
 
 	# all the data for this participant
-	participantData = new("participantData", nightstart=rs@nightstart, daystart=rs@daystart, days=list())
+	participantData = methods::new("participantData", nightstart=rs@nightstart, daystart=rs@daystart, days=list())
 
 	# firstvalid arg - can be used to use the first time point as the start of a day period
 	# dayPeriodStartTime arg - can be used to use a fixed time, that is the same across people
@@ -171,7 +171,7 @@ makeNewDay <-function(dayPeriod, events, bg, dayidx) {
 
 	# error when day doesn't have 1441 values (if clocks change)
 	newDay = tryCatch({
-		newDay = new('day', glucose=dayPeriod, dayidx=dayidx, validday=vdCheck, events=eventsForDay, bg=bgsForDay)
+		newDay = methods::new('day', glucose=dayPeriod, dayidx=dayidx, validday=vdCheck, events=eventsForDay, bg=bgsForDay)
 	}, error = function(e) {
 		print('Invalid day')
 		print(e)

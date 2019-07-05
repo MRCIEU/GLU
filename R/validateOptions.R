@@ -169,7 +169,7 @@ validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nigh
 	}
 
 
-	runSettings = new("runSettings", indir=indir, outdir=outdir, device=device, timeformat=timeformat, imputeApproximal=imputeApproximal, imputeOther=imputeOther, epochfrequency=freq, hypothreshold=hypothreshold, hyperthreshold=hyperthreshold, nightstart=nightstart, daystart=daystart, outlierthreshold=outlierthreshold, dayPeriodStartTime=dayPeriodStartTime, firstvalid=firstvalid, save=save)
+	runSettings = methods::new("runSettings", indir=indir, outdir=outdir, device=device, timeformat=timeformat, imputeApproximal=imputeApproximal, imputeOther=imputeOther, epochfrequency=freq, hypothreshold=hypothreshold, hyperthreshold=hyperthreshold, nightstart=nightstart, daystart=daystart, outlierthreshold=outlierthreshold, dayPeriodStartTime=dayPeriodStartTime, firstvalid=firstvalid, save=save)
 	return(runSettings)
 
 }
