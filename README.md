@@ -75,9 +75,13 @@ pregnancy       | Set to `TRUE` to use pregnancy thresholds for proportion of ti
 outdir  | Directory where derived CGM characteristics data files should be stored. Default is `inDir`.
 nightstart      | Time night period starts (HH:MM). Default is 23:00.
 daystart        | Time day period starts (HH:MM). Default is 06:30.
+dayPeriodStartTime	| Day period start time (HH:MM). Default is `nightstart`.
+firstvalid	| Use hour and minutes of the first valid glucose time points as the day period start time.
 save    |       Set to `TRUE` to save derived (resampled) CGM data.
+saveevents	| Save summary variables of each individual event, rather than just the averages for each day and across days.
 freq    |       Frequency between time points in CGM data (minutes). Default is 5 minutes.
-impute  |       Use simple imputation method (see paper).
+impute_approximal  |       Use approximal imputation method (see paper).
+impute_other_day	| Use other day imputation method (see paper).
 hypothreshold   | Threshold between hypoglycaemia and euglycemia, to overide the defaults
 hyperthreshold  | Threshold between euglycemia and hyperglycaemia, to overide the defaults
 timeformat      | Time format in CGM data. Default='%d/%m/%y %H:%M:%S' (format for Medtronic ipro2 data).
@@ -273,7 +277,7 @@ Run GLU for all files in a directory:
 ```
 library('GLU')
 datadir=system.file("extdata", package = "GLU")
-runGLUForDirectory(indir=paste0(datadir,'/medtronic-ipro2/original/'), outdir=paste0(datadir,'/medtronic-ipro2/derived/'))
+runGLUForDirectory(indir=paste0(datadir,'/medtronic-ipro2/original/'), outdir=paste0(datadir,'/medtronic-ipro2/derived/', save=TRUE, saveevents=TRUE))
 ```
 
 Run GLU for a specific file by specifying this file:
@@ -289,7 +293,7 @@ runGLUForFiles(files='data_export-999998.csv', indir=paste0(datadir,'/medtronic-
 ```
 library('GLU')
 datadir=system.file("extdata", package = "GLU")
-runGLUForDirectory(indir=paste0(datadir, '/freestyle-libre/original/'), outdir=paste0(datadir,'/freestyle-libre/derived/'), device=2, impute=TRUE, freq=15, nightstart='00:00')
+runGLUForDirectory(indir=paste0(datadir, '/freestyle-libre/original/'), outdir=paste0(datadir,'/freestyle-libre/derived/'), device=2, imputeapproximal=TRUE, freq=15, nightstart='00:00')
 ```
 
 #### Dexcom g6
@@ -297,7 +301,7 @@ runGLUForDirectory(indir=paste0(datadir, '/freestyle-libre/original/'), outdir=p
 ```
 library('GLU')
 datadir=system.file("extdata", package = "GLU")
-runGLUForDirectory(indir=paste0(datadir,'/dexcom-g6/original/'), outdir=paste0(datadir,'/dexcom-g6/derived/'), device=1, nightstart='17:00')
+runGLUForDirectory(indir=paste0(datadir,'/dexcom-g6/original/'), outdir=paste0(datadir,'/dexcom-g6/derived/'), device=1, nightstart='16:00', imputeOther=TRUE)
 ```
 
 
