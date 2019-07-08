@@ -54,7 +54,12 @@ setClass("participantData",
 			numvaliddays = "numeric")
 )
 
-
+setClass("event",
+	slots = c(events = "data.frame",
+			meantimetopeak = "numeric",
+			meanpp1 = "numeric",
+			meanpp2 = "numeric")
+)
 
 
 
@@ -74,6 +79,7 @@ setClass("runSettings",
 		hypothreshold = "numeric",
 		hyperthreshold = "numeric",
 		save = "logical",
+		saveevents = "logical",
 		pregnancy = "logical",
 		diabetes = "logical",
 		epochfrequency = "numeric")

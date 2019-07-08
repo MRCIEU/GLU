@@ -37,6 +37,7 @@ parseArgs <- function() {
 	optparse::make_option(c("-a", "--impute_approximal"), action="store_true", default=FALSE, help="Perform approximal imputation [default= %default]"),
 	optparse::make_option(c("-z", "--impute_other_day"), action="store_true", default=FALSE, help="Perform other day imputation [default= %default]"),
 	optparse::make_option(c("-s", "--save"), action="store_true", default=FALSE, help="Save derived CGM sequence(s) [default= %default]"),
+	optparse::make_option(c("-z", "--saveevents"), action="store_true", default=FALSE, help="Save derived variables for each event [default= %default]"),
 	optparse::make_option(c("-e", "--freq"), type="integer", default=5, help="CGM epoch data frequency (minutes) [default= %default]", metavar="number"),
 	optparse::make_option(c("-t", "--timeformat"), type="character", default='%d/%m/%y %H:%M:%S', help="Time format in the CGM data [default= %default]", metavar="character"),
 	optparse::make_option(c("-k", "--outlierthreshold"), type="integer", default=5, help="Value k used for outlier detection threshold d=k*SD [default= %default]", metavar="number"),

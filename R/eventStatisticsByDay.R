@@ -20,7 +20,7 @@
 
 # For each valid day store in validDays, derive event statistics (meals, medication and exercise).
 # Returns a data frame containing the event statistics for each day, and average across days.
-eventStatisticsByDay <- function(validDays) {
+eventStatisticsByDay <- function(validDays, rs, participantID) {
 
 	mtVDs = data.frame()
 	exVDs = data.frame()
@@ -29,6 +29,8 @@ eventStatisticsByDay <- function(validDays) {
         cnamesMT=c()
 	cnamesEx=c()
 	cnamesMed=c()
+
+	allEvents = data.frame(dayidx=c(), time=c(), time_to_peak=c(), postprand_1hr=c(), postprand_2hr=c())
 
         count=1
         for (vd in validDays) {
@@ -42,18 +44,38 @@ eventStatisticsByDay <- function(validDays) {
 		raw = getDayGlucoseValues(vd)
 
                 # event (meals, exercise, medication) statistics of this valid day only
-                mtVD = mealtimeStatistics(events, raw)
-		exVD = exerciseStatistics(events, raw)
-		medVD = medicationStatistics(events, raw)
+		mealEvents = mealtimeStatistics(events, raw)
+
+		if (nrow(mealEvents@events)>0) {
+			mealEvents@events = cbind(dayidx = vd@dayidx, mealEvents@events)
+			mealEvents@events$event = 'meal'
+			allEvents = rbind(allEvents, mealEvents@events)
+		}
+		
+		exEvents = exerciseStatistics(events, raw)
+
+		if (nrow(exEvents@events)>0) {
+			exEvents@events = cbind(dayidx = vd@dayidx, exEvents@events)
+			exEvents@events$event = 'exercise'
+			allEvents = rbind(allEvents, exEvents@events)
+		}
+
+		medEvents = medicationStatistics(events, raw)
+
+		if (nrow(medEvents@events)>0) {
+			medEvents@events = cbind(dayidx = vd@dayidx, medEvents@events)
+			medEvents@events$event = 'medication'
+			allEvents = rbind(allEvents, medEvents@events)
+		}
 
 		if (count==1) {
-			mtVDs = mtVD
-			exVDs = exVD
-			medVDs = medVD
+			mtVDs = data.frame(mealEvents@meantimetopeak, mealEvents@meanpp1, mealEvents@meanpp2)
+			exVDs = data.frame(exEvents@meanpp1, exEvents@meanpp2)
+			medVDs = data.frame(medEvents@meanpp1, medEvents@meanpp2)
 		} else {
-			mtVDs = cbind.data.frame(mtVDs, mtVD)
-			exVDs = cbind.data.frame(exVDs, exVD)
-			medVDs = cbind.data.frame(medVDs, medVD)
+			mtVDs = cbind.data.frame(mtVDs, data.frame(mealEvents@meantimetopeak, mealEvents@meanpp1, mealEvents@meanpp2))
+			exVDs = cbind.data.frame(exVDs, data.frame(exEvents@meanpp1, exEvents@meanpp2))
+			medVDs = cbind.data.frame(medVDs, data.frame(medEvents@meanpp1, medEvents@meanpp2))
 		}
 
 	        cnamesMT = append(cnamesMT, c(paste("meal_timeToPeak_day", count, sep=""), paste("meal_1hr_postprandial_day", count, sep=""), paste("meal_2hr_postprandial_day", count, sep="")))
@@ -63,6 +85,9 @@ eventStatisticsByDay <- function(validDays) {
                 count=count+1
 
         }
+
+	saveEventData(allEvents, participantID, rs)
+
 
 
 	# average each statistic across days

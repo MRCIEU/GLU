@@ -54,7 +54,7 @@ deriveCharacteristics <- function(validDays, userIDdf, rs) {
 
 	print('Events')
         # meal time statistics
-        eventValues = eventStatisticsByDay(validDays)
+        eventValues = eventStatisticsByDay(validDays, rs, userIDdf)
 
         # whole result row for this participant
 #	summThis = cbind.data.frame(userIDdf, madx, aucValues, proportions, lability, fastingProxy, othervars, nps)

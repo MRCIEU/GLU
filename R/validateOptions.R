@@ -19,7 +19,7 @@
 
 
 # process arguments supplied to GLU by the user
-validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', dayPeriodStartTime=NULL, firstvalid=FALSE, timeformat='%d/%m/%y %H:%M:%S', imputeApproximal=FALSE, imputeOther=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE) {
+validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', dayPeriodStartTime=NULL, firstvalid=FALSE, timeformat='%d/%m/%y %H:%M:%S', imputeApproximal=FALSE, imputeOther=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, saveevents=FALSE, pregnancy=FALSE, diabetes=FALSE) {
 
 
 	if (device<0 | device>3) {
@@ -64,6 +64,11 @@ validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nigh
 
                 dir.create(validDaysDir)
         }
+
+	if (saveevents == TRUE) {
+		eventsDir = file.path(outdir, "/events/")
+		dir.create(eventsDir)
+	}
 
 #	if (!is.null(filename)){
 #                if (!file.exists(paste(indir, filename, sep=""))) {
@@ -169,7 +174,7 @@ validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nigh
 	}
 
 
-	runSettings = methods::new("runSettings", indir=indir, outdir=outdir, device=device, timeformat=timeformat, imputeApproximal=imputeApproximal, imputeOther=imputeOther, epochfrequency=freq, hypothreshold=hypothreshold, hyperthreshold=hyperthreshold, nightstart=nightstart, daystart=daystart, outlierthreshold=outlierthreshold, dayPeriodStartTime=dayPeriodStartTime, firstvalid=firstvalid, save=save)
+	runSettings = methods::new("runSettings", indir=indir, outdir=outdir, device=device, timeformat=timeformat, imputeApproximal=imputeApproximal, imputeOther=imputeOther, epochfrequency=freq, hypothreshold=hypothreshold, hyperthreshold=hyperthreshold, nightstart=nightstart, daystart=daystart, outlierthreshold=outlierthreshold, dayPeriodStartTime=dayPeriodStartTime, firstvalid=firstvalid, save=save, saveevents=saveevents)
 	return(runSettings)
 
 }

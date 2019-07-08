@@ -25,13 +25,12 @@ medicationStatistics <- function(events, raw) {
         # get rows indexes with medication events
 	idxMed = which(events$event == "MEDICATION")
 
+	meds = data.frame(time=c(), time_to_peak=c(), postprand_1hr=c(), postprand_2hr=c())
+
 	if (length(idxMed)==0) {
 		print("No medication")
-		return(data.frame(NA,NA))
+		return(new("event", events = meds, meantimetopeak = NA_real_, meanpp1 = NA_real_, meanpp2 = NA_real_))
 	}
-
-	pp1s = c()
-	pp2s = c()
 
 	if (length(idxMed)>0) {
 	for (i in 1:length(idxMed)) {
@@ -42,19 +41,18 @@ medicationStatistics <- function(events, raw) {
 		pp1 = postprandial(raw,	events$time[idxThisMed], 1)
 		pp2 = postprandial(raw, events$time[idxThisMed], 2)
 
-		pp1s = c(pp1s, pp1)
-		pp2s = c(pp2s, pp2)
+		med_sum = data.frame(time=events$time[idxThisMed], time_to_peak = NA_real_, postprand_1hr=pp1, postprand_2hr=pp2)
+		meds = rbind(meds, med_sum)
 	}
 	}
 
 	# average values
-        pp1sMean = mean(pp1s, na.rm=TRUE)
-        pp2sMean = mean(pp2s, na.rm=TRUE)
+        pp1sMean = mean(meds$postprand_1hr, na.rm=TRUE)
+        pp2sMean = mean(meds$postprand_2hr, na.rm=TRUE)
 
-        # combine values into one data frame and add column names
-        summ = data.frame(pp1sMean, pp2sMean)
+	events = new("event", events = meds, meantimetopeak = NA_real_, meanpp1 = pp1sMean, meanpp2 = pp2sMean)
 
-	return(summ)
+	return(events)
 
 
 }

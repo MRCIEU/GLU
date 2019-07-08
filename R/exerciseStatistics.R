@@ -25,14 +25,12 @@ exerciseStatistics <- function(events, raw) {
         # get rows indexes with exercise events
 	idxEx = which(events$event == "EXERCISE")
 
+	ex = data.frame(time=c(), time_to_peak=c(), postprand_1hr=c(), postprand_2hr=c())
+
 	if (length(idxEx)==0) {
 		print("No exercise")
-		return(data.frame(NA,NA))
+		return(new("event", events = ex, meantimetopeak = NA_real_, meanpp1 = NA_real_, meanpp2 = NA_real_))
 	}
-
-	pp1s = c()
-	pp2s = c()
-
 
 	if (length(idxEx)>0) {
 	for (i in 1:length(idxEx)) {
@@ -43,20 +41,18 @@ exerciseStatistics <- function(events, raw) {
 		pp1 = postprandial(raw,	events$time[idxThisEx], 1)
 		pp2 = postprandial(raw, events$time[idxThisEx], 2)	
 
-		pp1s = c(pp1s, pp1)
-		pp2s = c(pp2s, pp2)
+		ex_sum = data.frame(time=events$time[idxThisEx], time_to_peak = NA_real_, postprand_1hr=pp1, postprand_2hr=pp2)
+		ex = rbind(ex, ex_sum)
 	}
 	}
 
 	# average values
-	pp1sMean = mean(pp1s, na.rm=TRUE)
-	pp2sMean = mean(pp2s, na.rm=TRUE)
+	pp1sMean = mean(ex$postprand_1hr, na.rm=TRUE)
+	pp2sMean = mean(ex$postprand_2hr, na.rm=TRUE)
 
+	events = new("event", events = ex, meantimetopeak = NA_real_, meanpp1 = pp1sMean, meanpp2 = pp2sMean)
 
-	# combine values into one data frame and add column names
-	summ = data.frame(pp1sMean, pp2sMean)
-
-        return(summ)
+        return(events)
 
 }
 

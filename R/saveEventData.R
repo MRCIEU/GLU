@@ -17,27 +17,25 @@
 # DEALINGS IN THE SOFTWARE.
 
 
-#' Main function to run GLU from the command line
-#'
-#' @param opt List containing command line arguments.
-#' @export
-runGLU <- function(opt) {
 
-# if user specifies a filename then process this, otherwise process all other files in indir
-if (!is.null(opt$filename)) {
+# Saves data for each event to file.
+saveEventData <- function(events, userID, rs) {
 
-	fullfilename=paste0(opt$indir, opt$filename)
+	if (rs@saveevents == TRUE & nrow(events)>0) {
 
-	if (!file.exists(fullfilename)) {
-		stop(paste0('File ', fullfilename, ' does not exist'))
+		print("Saving events ...")
+
+		namePrefix = userID
+		if (rs@imputeApproximal==TRUE) {
+	                namePrefix = paste(namePrefix, '-impute-approximal', sep='')
+	        }
+		else if (rs@imputeOther==TRUE) {
+	                namePrefix = paste(namePrefix, '-impute-other', sep='')
+	        }
+
+	        # save event data
+	        write.table(events, file=paste(rs@outdir, "/events/events-", namePrefix, ".csv",sep=""), sep=",", quote=FALSE, row.names=FALSE, na="")
+	
 	}
-	files=c(opt$filename)
-
-} else {
-	files = list.files(opt$indir, pattern=".*\\..*", full.names=FALSE)
-}
-
-runGLUForFiles(files=files, indir=opt$indir, outdir=opt$outdir, device=opt$device, daystart=opt$daystart, nightstart=opt$nightstart, dayPeriodStartTime=opt$dayPeriodStartTime, timeformat=opt$timeformat, imputeApproximal=opt$impute_approximal, imputeOther=opt$impute_other, freq=opt$freq, outlierthreshold=opt$outlierthreshold, hypothreshold=opt$hypothreshold, hyperthreshold=opt$hyperthreshold, save=opt$save, saveevents=opt$saveevents, pregnancy=opt$pregnancy, diabetes=opt$diabetes)
 
 }
-

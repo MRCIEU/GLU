@@ -37,7 +37,7 @@
 #' @param pregnancy Logical. If TRUE then data is for pregnancy study, so pregnancy specific statistics should be derived.
 #' @param diabetes Logical. If TRUE then data is for diabetes study, so pregnancy specific statistics should be derived.
 #' @export
-runGLUForFiles <- function(files, indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', dayPeriodStartTime=NULL, firstvalid=FALSE, timeformat='%d/%m/%y %H:%M:%S', imputeApproximal=FALSE, imputeOther=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, pregnancy=FALSE, diabetes=FALSE, epochfrequency=5) {
+runGLUForFiles <- function(files, indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', dayPeriodStartTime=NULL, firstvalid=FALSE, timeformat='%d/%m/%y %H:%M:%S', imputeApproximal=FALSE, imputeOther=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, saveevents=FALSE, pregnancy=FALSE, diabetes=FALSE, epochfrequency=5) {
 
 
 print('Running GLU...')
@@ -46,7 +46,7 @@ print(paste0('GLU package version: ', packageVersion("GLU")))
 
 
 # run settings
-rs = validateOptions(indir, outdir, device, daystart, nightstart, dayPeriodStartTime, firstvalid, timeformat, imputeApproximal, imputeOther, freq, outlierthreshold, hypothreshold, hyperthreshold, save, pregnancy, diabetes)
+rs = validateOptions(indir, outdir, device, daystart, nightstart, dayPeriodStartTime, firstvalid, timeformat, imputeApproximal, imputeOther, freq, outlierthreshold, hypothreshold, hyperthreshold, save, saveevents, pregnancy, diabetes)
 
 
 # Save run settings for reporting in publications

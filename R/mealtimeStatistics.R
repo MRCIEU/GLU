@@ -25,14 +25,12 @@ mealtimeStatistics <- function(events, raw) {
         # get rows indexes with meals
 	idxMeal = which(events$event == "MEAL")
 
+	meals = data.frame(time=c(), time_to_peak=c(), postprand_1hr=c(), postprand_2hr=c())
+
 	if (length(idxMeal)==0) {
 		print("No meals")
-		return(data.frame(NA,NA,NA))
+		return(new("event", events = meals, meantimetopeak = NA_real_, meanpp1 = NA_real_, meanpp2 = NA_real_))
 	}
-
-	tTPs = c()
-	pp1s = c()
-	pp2s = c()
 
 	if (length(idxMeal)>0) {
 	for (i in 1:length(idxMeal)) {
@@ -46,21 +44,20 @@ mealtimeStatistics <- function(events, raw) {
 		pp1 = postprandial(raw, events$time[idxThisMeal], 1)
                 pp2 = postprandial(raw, events$time[idxThisMeal], 2)	
 
-		tTPs = c(tTPs, tTP)
-		pp1s = c(pp1s, pp1)
-		pp2s = c(pp2s, pp2)
+		meal_sum = data.frame(time=events$time[idxThisMeal], time_to_peak=tTP, postprand_1hr=pp1, postprand_2hr=pp2)		
+		meals = rbind(meals, meal_sum)
+
 	}
 	}
 
 	# average values
-	tTPsMean = mean(tTPs, na.rm=TRUE)
-        pp1sMean = mean(pp1s, na.rm=TRUE)
-        pp2sMean = mean(pp2s, na.rm=TRUE)
+	tTPsMean = mean(meals$time_to_peak, na.rm=TRUE)
+	pp1sMean = mean(meals$postprand_1hr, na.rm=TRUE)
+	pp2sMean = mean(meals$postprand_2hr, na.rm=TRUE)
 
-        # combine values into one data frame and add column names
-        summ = data.frame(tTPsMean, pp1sMean, pp2sMean)
+	events = new("event", events = meals, meantimetopeak = tTPsMean, meanpp1 = pp1sMean, meanpp2 = pp2sMean)
 
-        return(summ)
+	return(events)
 
 }
 
