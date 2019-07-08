@@ -48,7 +48,7 @@ fastingProxy <- function(raw) {
 
 	noctNotNA = raw$noctMean[which(!is.na(raw$noctMean))]
 
-	# lowest of the 6 consecutive values (minutes)
+	# lowest of the 30 consecutive minutes
 	fastProxy = min(noctNotNA)
 
 	return(fastProxy)
