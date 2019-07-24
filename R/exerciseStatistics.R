@@ -29,7 +29,7 @@ exerciseStatistics <- function(events, raw) {
 
 	if (length(idxEx)==0) {
 		print("No exercise")
-		return(new("event", events = ex, meantimetopeak = NA_real_, meanpp1 = NA_real_, meanpp2 = NA_real_))
+		return(methods::new("event", events = ex, meantimetopeak = NA_real_, meanpp1 = NA_real_, meanpp2 = NA_real_))
 	}
 
 	if (length(idxEx)>0) {
@@ -50,7 +50,7 @@ exerciseStatistics <- function(events, raw) {
 	pp1sMean = mean(ex$postprand_1hr, na.rm=TRUE)
 	pp2sMean = mean(ex$postprand_2hr, na.rm=TRUE)
 
-	events = new("event", events = ex, meantimetopeak = NA_real_, meanpp1 = pp1sMean, meanpp2 = pp2sMean)
+	events = methods::new("event", events = ex, meantimetopeak = NA_real_, meanpp1 = pp1sMean, meanpp2 = pp2sMean)
 
         return(events)
 

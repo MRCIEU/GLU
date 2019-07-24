@@ -29,7 +29,7 @@ medicationStatistics <- function(events, raw) {
 
 	if (length(idxMed)==0) {
 		print("No medication")
-		return(new("event", events = meds, meantimetopeak = NA_real_, meanpp1 = NA_real_, meanpp2 = NA_real_))
+		return(methods::new("event", events = meds, meantimetopeak = NA_real_, meanpp1 = NA_real_, meanpp2 = NA_real_))
 	}
 
 	if (length(idxMed)>0) {
@@ -50,7 +50,7 @@ medicationStatistics <- function(events, raw) {
         pp1sMean = mean(meds$postprand_1hr, na.rm=TRUE)
         pp2sMean = mean(meds$postprand_2hr, na.rm=TRUE)
 
-	events = new("event", events = meds, meantimetopeak = NA_real_, meanpp1 = pp1sMean, meanpp2 = pp2sMean)
+	events = methods::new("event", events = meds, meantimetopeak = NA_real_, meanpp1 = pp1sMean, meanpp2 = pp2sMean)
 
 	return(events)
 

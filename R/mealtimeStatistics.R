@@ -29,7 +29,7 @@ mealtimeStatistics <- function(events, raw) {
 
 	if (length(idxMeal)==0) {
 		print("No meals")
-		return(new("event", events = meals, meantimetopeak = NA_real_, meanpp1 = NA_real_, meanpp2 = NA_real_))
+		return(methods::new("event", events = meals, meantimetopeak = NA_real_, meanpp1 = NA_real_, meanpp2 = NA_real_))
 	}
 
 	if (length(idxMeal)>0) {
@@ -55,7 +55,7 @@ mealtimeStatistics <- function(events, raw) {
 	pp1sMean = mean(meals$postprand_1hr, na.rm=TRUE)
 	pp2sMean = mean(meals$postprand_2hr, na.rm=TRUE)
 
-	events = new("event", events = meals, meantimetopeak = tTPsMean, meanpp1 = pp1sMean, meanpp2 = pp2sMean)
+	events = methods::new("event", events = meals, meantimetopeak = tTPsMean, meanpp1 = pp1sMean, meanpp2 = pp2sMean)
 
 	return(events)
 
