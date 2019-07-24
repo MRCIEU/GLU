@@ -135,7 +135,7 @@ validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nigh
 		# default settings for low and high thresholds
 
 		if (pregnancy == TRUE) {
-			hypothreshold = 3.9
+			hypothreshold = 3.5
 			hyperthreshold = 7.8
 			print(paste("Using pregnancy hypo-glycaemia threshold: ", hypothreshold, sep=""))
 	                print(paste("Using pregnancy hyper-glycaemia threshold: ", hyperthreshold, sep=""))
