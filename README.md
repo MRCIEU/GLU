@@ -59,20 +59,26 @@ To update GLU to the latest version, rerun the `install_github` command.
 
 ## 4. Running GLU within R
 
-The main function in GLU is called `runGLUForFiles`. It takes two compulsory arguments `files` and `indir`, and there are a number of optional arguments, as now described.
+There are two main functions in GLU: `runGLUForFiles` and `runGLUForDirectory`, that run GLU for either a specific set of files, or for all files in a particular directory.
+Both these functions take an `indir` compulsory argument that specifies the directory containing the CGM data files.
+The `runGLUForFiles` has an additional `files` compulsory argument, for providing the names of files that should be processed.
+The compulsory and optional arguments are as follows.
 
+#### Compulsory arguments
 
 Arg | Description
 -------|--------
 indir   | Directory where processed CGM data files (i.e. output from step 1) are stored.
-files	| List of file names to be processed by GLU, where these files reside in the indir directory.
+files   |  List of file names to be processed by GLU, where these files reside in the indir directory (required only for the `runGLUForFiles` function).
+
 
 #### Optional arguments
 
 Arg | Description
 -------|--------
-pregnancy       | Set to `TRUE` to use pregnancy thresholds for proportion of time spent in low, normal and high characteristics.
-outdir  | Directory where derived CGM characteristics data files should be stored. Default is `inDir`.
+pregnancy       | Set to `TRUE` to use pregnancy thresholds for proportion of time spent in low, normal and high summary variables.
+diabetes	| Set to `TRUE` to use diabetes thresholds for proportion of time spent in low, normal and high summary variables.
+outdir  | Directory where derived CGM characteristics data files should be stored. Default is `indir`.
 nightstart      | Time night period starts (HH:MM). Default is 23:00.
 daystart        | Time day period starts (HH:MM). Default is 06:30.
 dayPeriodStartTime	| Day period start time (HH:MM). Default is `nightstart`.
