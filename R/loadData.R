@@ -25,7 +25,6 @@
 loadData <- function(fileName, userID, rs) {
 
 	dir = rs@outdir
-
 	rawData <- read.table(paste(dir,'/', fileName,sep=""), sep=",", header=1)
 
 	## REQUIRED COLUMNS
@@ -79,8 +78,10 @@ loadData <- function(fileName, userID, rs) {
 			events = eventsMeal
 		}
 	}
-	if (length(which(names(rawData) == 'Exercise')>0)) {
-		eventsEx = rawData[which(!is.na(rawData$Exercise) & rawData$Exercise!=""),]
+
+	if (length(which(tolower(names(rawData)) == 'exercise')>0)) {
+		colEx = colnames(rawData)[which(tolower(names(rawData)) == 'exercise')]
+		eventsEx = rawData[which(!is.na(rawData[,colEx]) & rawData[,colEx]!=""),]
 		
 		if (nrow(eventsEx)>0) {
 
@@ -96,8 +97,9 @@ loadData <- function(fileName, userID, rs) {
 			}
 		}
         }
-	if (length(which(names(rawData) == 'Medication')>0)) {
-		eventsMed = rawData[which(!is.na(rawData$Medication) & rawData$Medication!=""),]
+	if (length(which(tolower(names(rawData)) == 'medication')>0)) {
+		colMed = colnames(rawData)[which(tolower(names(rawData)) == 'medication')]
+		eventsMed = rawData[which(!is.na(rawData[,colMed]) & rawData[,colMed]!=""),]
 
 		if (nrow(eventsMed)>0) {
 

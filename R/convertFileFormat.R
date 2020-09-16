@@ -36,6 +36,7 @@ convertFileFormat <- function(filename, rs) {
 	   }
 	else if (rs@device == 3) {
 		## already in correct format
+		file.copy(inFile,outFile)
 	   }
 
 
