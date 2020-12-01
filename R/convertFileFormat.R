@@ -135,8 +135,10 @@ convertFileDexcom <- function(inFile, outFile, filename) {
 
 	## remove rows with no timestamp
 	ix = which(is.na(data$Timestamp..YYYY.MM.DDThh.mm.ss.) | data$Timestamp..YYYY.MM.DDThh.mm.ss.=="")
-	data = data[-ix,]
-
+	if (length(ix)>0) {
+		data = data[-ix,]
+	}
+	
 	## timestamp - date and time
 	data = checkAndRename('Timestamp..YYYY.MM.DDThh.mm.ss.', 'time', data)
 
