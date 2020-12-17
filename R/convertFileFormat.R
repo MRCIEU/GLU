@@ -135,7 +135,7 @@ convertFileDexcom <- function(inFile, outFile, filename) {
 
 	# convert CGM values to numeric, needed because sometimes it contains text values e.g. 'Low'
 	# Note this can produce a 'NAs introduced by coercion' warning message but that's OK, the non-numeric text values are converted to NAs
-	data$Glucose.Value..mmol.L. = as.numeric(data$Glucose.Value..mmol.L.)
+	data$Glucose.Value..mmol.L. = as.numeric(as.character(data$Glucose.Value..mmol.L.))
 
 	## remove rows with no timestamp
 	ix = which(is.na(data$Timestamp..YYYY.MM.DDThh.mm.ss.) | data$Timestamp..YYYY.MM.DDThh.mm.ss.=="" | is.na(data$Glucose.Value..mmol.L.))
