@@ -59,13 +59,13 @@ convertFileMedtronic <- function(inFile, outFile, filename) {
 	# time, sgReading, meal, exercise, medication, bgReading
 
 	## timestamp - date and time
-	data = checkAndRename('Timestamp', 'time', data)
+	data = checkAndRename('Timestamp', '', 'time', data)
 
 	## Sensor glucose
-	data = checkAndRename('Sensor.Glucose..mmol.L.', 'sgReading', data)
+	data = checkAndRename('Sensor.Glucose..mmol.L.', '', 'sgReading', data)
 
 	## blood glucose reading (from finger prick) needed to calibrate this device
-	data = checkAndRename('BG.Reading..mmol.L.', 'bgReading', data)
+	data = checkAndRename('BG.Reading..mmol.L.', '', 'bgReading', data)
 
 	## excluded rows
 	colName = "Excluded"
@@ -112,7 +112,7 @@ convertFileMedtronic <- function(inFile, outFile, filename) {
 	}
 
 	## medication
-	data = checkAndRename('Medication', 'medication', data)
+	data = checkAndRename('Medication', '', 'medication', data)
 
 
 	####
@@ -144,7 +144,7 @@ convertFileDexcom <- function(inFile, outFile, filename) {
 	}
 	
 	## timestamp - date and time
-	data = checkAndRename('Timestamp..YYYY.MM.DDThh.mm.ss.', 'time', data)
+	data = checkAndRename('Timestamp..YYYY.MM.DDThh.mm.ss.', '', 'time', data)
 
 	## change time to consistent format
 	timeFormat = '%Y-%m-%dT%H:%M:%S'
@@ -152,7 +152,7 @@ convertFileDexcom <- function(inFile, outFile, filename) {
 	data$time = format(data$time, '%d/%m/%y %H:%M:%S')
 
 	## Sensor glucose
-	data = checkAndRename('Glucose.Value..mmol.L.', 'sgReading', data)
+	data = checkAndRename('Glucose.Value..mmol.L.', '', 'sgReading', data)
 
 
 	####
@@ -183,7 +183,8 @@ convertFileAbbotFreestyleLibre <- function(inFile, outFile, filename) {
 	data = data[ix,]
 
 	## timestamp - date and time
-	data = checkAndRename('Time', 'time', data)
+
+	data = checkAndRename('Time', 'Device.Timestamp', 'time', data)
 
 	## change time to consistent format
 	timeFormat = '%Y/%m/%d %H:%M'
@@ -191,13 +192,13 @@ convertFileAbbotFreestyleLibre <- function(inFile, outFile, filename) {
 	data$time = format(data$time, '%d/%m/%y %H:%M:%S')
 	
 	## Sensor glucose
-	data = checkAndRename('Historic.Glucose..mmol.L.', 'sgReading', data)
+	data = checkAndRename('Historic.Glucose..mmol.L.', '', 'sgReading', data)
 
 	## blood glucose reading (from finger prick)
-	data = checkAndRename('Strip.Glucose..mmol.L.', 'bgReading', data)
+	data = checkAndRename('Strip.Glucose..mmol.L.', '', 'bgReading', data)
 
 	## meals
-	data = checkAndRename('Non.numeric.Food', 'meal', data)
+	data = checkAndRename('Non.numeric.Food','', 'meal', data)
 
 
 	####
@@ -211,13 +212,22 @@ convertFileAbbotFreestyleLibre <- function(inFile, outFile, filename) {
 
 
 # checks column exists and renames it
-checkAndRename <- function(oldname, newname, data) {
+checkAndRename <- function(oldname, oldname2, newname, data) {
 	
 	ixT = which(colnames(data) == oldname)
 	if (length(ixT)==0) {
-		stop(paste("Column missing from input file:", oldname), call.=FALSE)
-	}
-	colnames(data)[ixT] = newname
 
+		ixT2 = which(colnames(data) == oldname2)
+
+		if (length(ixT2)==0) {
+			stop(paste("Column missing from input file:", oldname, oldname2), call.=FALSE)
+		}
+
+		colnames(data)[ixT2] = newname
+	}
+	else {
+		colnames(data)[ixT] = newname
+	}
+	
 	return(data)
 }
