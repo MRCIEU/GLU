@@ -283,7 +283,7 @@ Run GLU for all files in a directory:
 ```
 library('GLU')
 datadir=system.file("extdata", package = "GLU")
-runGLUForDirectory(indir=paste0(datadir,'/medtronic-ipro2/original/'), outdir=paste0(datadir,'/medtronic-ipro2/derived/', save=TRUE, saveevents=TRUE))
+runGLUForDirectory(indir=paste0(datadir,'/medtronic-ipro2/original/'), outdir=paste0(datadir,'/medtronic-ipro2/derived/'), save=TRUE, saveevents=TRUE)
 ```
 
 Run GLU for a specific file by specifying this file:
