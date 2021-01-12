@@ -213,7 +213,14 @@ fillWithNearby <- function(block, daycombined) {
 	}
 	seqRight = daycombined$sgReading[(end+1):rightend]
 
-	return(c(seqLeft, seqRight))
+	seq = c(seqLeft, seqRight)
+
+	# if there are NAs in the sequence could not impute with nearby data so return null
+	if(length(which(is.na(seq)))>0) {
+		return(NULL)
+	}
+
+	return(seq)
 }
 
 
