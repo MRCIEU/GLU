@@ -86,8 +86,8 @@ firstvalid	| Use hour and minutes of the first valid glucose time points as the 
 save    |       Set to `TRUE` to save derived (resampled) CGM data.
 saveevents	| Save summary variables of each individual event, rather than just the averages for each day and across days.
 freq    |       Frequency between time points in CGM data (minutes). Default is 5 minutes.
-impute_approximal  |       Use approximal imputation method (see paper).
-impute_other_day	| Use other day imputation method (see paper).
+imputeApproximal  |       Use approximal imputation method (see paper).
+imputeOther	| Use other day imputation method (see paper).
 hypothreshold   | Threshold between hypoglycaemia and euglycemia, to overide the defaults
 hyperthreshold  | Threshold between euglycemia and hyperglycaemia, to overide the defaults
 timeformat      | Time format in CGM data. Default='%d/%m/%y %H:%M:%S' (format for Medtronic ipro2 data).
@@ -299,7 +299,7 @@ runGLUForFiles(files='data_export-999998.csv', indir=paste0(datadir,'/medtronic-
 ```
 library('GLU')
 datadir=system.file("extdata", package = "GLU")
-runGLUForDirectory(indir=paste0(datadir, '/freestyle-libre/original/'), outdir=paste0(datadir,'/freestyle-libre/derived/'), device=2, imputeapproximal=TRUE, freq=15, nightstart='00:00')
+runGLUForDirectory(indir=paste0(datadir, '/freestyle-libre/original/'), outdir=paste0(datadir,'/freestyle-libre/derived/'), device=2, imputeApproximal=TRUE, freq=15, nightstart='00:00')
 ```
 
 #### Dexcom g6
@@ -325,7 +325,7 @@ To process a specific CGM data file, specify the filename argument:
 Rscript run.R --indir="/path/to/in/dir/"  --outdir="/path/to/out/dir/" --filename="infile.csv"
 ```
 
-See all the arguments available by calling `run.R` with not arguments:
+See all the arguments available by calling `run.R` with no arguments:
 
 ```bash
 Rscript run.R
