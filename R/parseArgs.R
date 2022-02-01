@@ -43,7 +43,8 @@ parseArgs <- function() {
 	optparse::make_option(c("-k", "--outlierthreshold"), type="integer", default=5, help="Value k used for outlier detection threshold d=k*SD [default= %default]", metavar="number"),
 	optparse::make_option(c("-p", "--pregnancy"), action="store_true", default=FALSE, help="Data is for pregnancy study, so pregnancy specific statistics should be derived [default= %default]"),
 	optparse::make_option(c("-q", "--diabetes"), action="store_true", default=FALSE, help="Data is for diabetes study, so diabetes specific statistics should be derived [default= %default]"),
-	optparse::make_option(c("-b", "--device"), type="integer", default=0, help="CGM device used. 0: medtronic ipro2, 1: dexcom G2, 2: Abbott freestyle libre, 3: other device (data provided in generic format). [default= %default]")
+	optparse::make_option(c("-b", "--device"), type="integer", default=0, help="CGM device used. 0: medtronic ipro2, 1: dexcom G2, 2: Abbott freestyle libre, 3: other device (data provided in generic format). [default= %default]"),
+	optparse::make_option(c("-y", "--mgdl"), action="store_true", default=FALSE, help="Glucose values are in mg/dL rather than mmol/L [default= %default]")
 	)
 
 	opt_parser = optparse::OptionParser(option_list=option_list)

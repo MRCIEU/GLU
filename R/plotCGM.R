@@ -22,7 +22,7 @@
 # 1. Histogram of SG values.
 # 2. Poincare plot (showing how values vary from one timepoint to the next.
 # 3. Time-series plots of each days sequence (anotated with events and BG readings)
-plotCGM <- function(validDays, dir, userID, hypothreshold, hyperthreshold) {
+plotCGM <- function(validDays, dir, userID, rs) {
 	options(warn=1)
 	print("Plotting ...")
 
@@ -69,7 +69,7 @@ plotCGM <- function(validDays, dir, userID, hypothreshold, hyperthreshold) {
 		## time-series CGM plot
 		#############
 
-		plotCGMTrace(rawV, dir, userID, vd, hypothreshold, hyperthreshold)
+		plotCGMTrace(rawV, dir, userID, vd, rs@hypothreshold, rs@hyperthreshold, rs@mgdl)
 
 	}
 
@@ -95,7 +95,7 @@ plotPoincare <- function(rawV, dir, userID) {
 
 }
 
-plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
+plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold, mgdl) {
 
 	# plot each segment so that imputed and non-imputed segments are color coded
 	groupidx=1
@@ -152,7 +152,12 @@ plotCGMTrace <- function(rawV, dir, userID, vd, hypothreshold, hyperthreshold) {
 
 
 	## set axis labels
-	p=p+ xlab("Date / time") + ylab("Glucose value (mmol/L)")
+	if (mgdl == TRUE) {
+		p=p+ xlab("Date / time") + ylab("Glucose value (mg/dL)")
+	}
+	else {
+		p=p+ xlab("Date / time") + ylab("Glucose value (mmol/L)")
+	}
 
 	## rotate x tick labels
 	p=p + theme(axis.text.x = element_text(angle = 60, hjust = 1))

@@ -38,6 +38,7 @@ saveRunSettings <- function(runSettings) {
 	print(paste0('save: ', runSettings@save))
 	print(paste0('pregnancy: ', runSettings@pregnancy))
 	print(paste0('diabetes: ', runSettings@diabetes))
+	print(paste0('mgdl: ', runSettings@mgdl))
 
 	sink()
 

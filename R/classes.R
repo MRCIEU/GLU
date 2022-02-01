@@ -82,5 +82,6 @@ setClass("runSettings",
 		saveevents = "logical",
 		pregnancy = "logical",
 		diabetes = "logical",
-		epochfrequency = "numeric")
+		epochfrequency = "numeric",
+		mgdl = "logical")
 )

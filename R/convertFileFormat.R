@@ -62,10 +62,18 @@ convertFileMedtronic <- function(inFile, outFile, filename) {
 	data = checkAndRename('Timestamp', '', 'time', data)
 
 	## Sensor glucose
-	data = checkAndRename('Sensor.Glucose..mmol.L.', '', 'sgReading', data)
+
+	# glucose column name might contain mmol/L or mg/dL so we get it this way
+        sensGlucColName = colnames(data)[which(grepl('^Sensor.Glucose', colnames(data)))]
+
+	data = checkAndRename(sensGlucColName, '', 'sgReading', data)
 
 	## blood glucose reading (from finger prick) needed to calibrate this device
-	data = checkAndRename('BG.Reading..mmol.L.', '', 'bgReading', data)
+
+	# glucose column name might contain mmol/L or mg/dL so we get it this way
+        bloodGlucColName = colnames(data)[which(grepl('^BG.Reading', colnames(data)))]
+
+	data = checkAndRename(bloodGlucColName, '', 'bgReading', data)
 
 	## excluded rows
 	colName = "Excluded"
@@ -133,12 +141,15 @@ convertFileDexcom <- function(inFile, outFile, filename) {
 	## convert lines to data frame
 	data = read.table(text = lines, sep=',', quote="", header=1)
 
+	# glucose column name might contain mmol/L or mg/dL so we get it this way
+	glucColName = colnames(data)[which(grepl('^Glucose.Value', colnames(data)))]
+
 	# convert CGM values to numeric, needed because sometimes it contains text values e.g. 'Low'
 	# Note this can produce a 'NAs introduced by coercion' warning message but that's OK, the non-numeric text values are converted to NAs
-	data$Glucose.Value..mmol.L. = as.numeric(as.character(data$Glucose.Value..mmol.L.))
+	data[,glucColName] = as.numeric(as.character(data[,glucColName]))
 
 	## remove rows with no timestamp
-	ix = which(is.na(data$Timestamp..YYYY.MM.DDThh.mm.ss.) | data$Timestamp..YYYY.MM.DDThh.mm.ss.=="" | is.na(data$Glucose.Value..mmol.L.))
+	ix = which(is.na(data$Timestamp..YYYY.MM.DDThh.mm.ss.) | data$Timestamp..YYYY.MM.DDThh.mm.ss.=="" | is.na(data[,glucColName]))
 	if (length(ix)>0) {
 		data = data[-ix,]
 	}
@@ -152,7 +163,7 @@ convertFileDexcom <- function(inFile, outFile, filename) {
 	data$time = format(data$time, '%d/%m/%y %H:%M:%S')
 
 	## Sensor glucose
-	data = checkAndRename('Glucose.Value..mmol.L.', '', 'sgReading', data)
+	data = checkAndRename(glucColName, '', 'sgReading', data)
 
 
 	####
@@ -192,10 +203,16 @@ convertFileAbbotFreestyleLibre <- function(inFile, outFile, filename) {
 	data$time = format(data$time, '%d/%m/%y %H:%M:%S')
 	
 	## Sensor glucose
-	data = checkAndRename('Historic.Glucose..mmol.L.', '', 'sgReading', data)
+        
+	# glucose column name might contain mmol/L or mg/dL so we get it this way
+        sensGlucColName = colnames(data)[which(grepl('^Historic.Glucose', colnames(data)))]
+	data = checkAndRename(sensGlucColName, '', 'sgReading', data)
 
 	## blood glucose reading (from finger prick)
-	data = checkAndRename('Strip.Glucose..mmol.L.', '', 'bgReading', data)
+
+	# glucose column name might contain mmol/L or mg/dL so we get it this way
+        bloodGlucColName = colnames(data)[which(grepl('^Strip.Glucose', colnames(data)))]
+	data = checkAndRename(bloodGlucColName, '', 'bgReading', data)
 
 	## meals
 	data = checkAndRename('Non.numeric.Food','', 'meal', data)

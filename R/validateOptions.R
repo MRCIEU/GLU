@@ -19,7 +19,7 @@
 
 
 # process arguments supplied to GLU by the user
-validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', dayPeriodStartTime=NULL, firstvalid=FALSE, timeformat='%d/%m/%y %H:%M:%S', imputeApproximal=FALSE, imputeOther=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, saveevents=FALSE, pregnancy=FALSE, diabetes=FALSE) {
+validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nightstart='23:00', dayPeriodStartTime=NULL, firstvalid=FALSE, timeformat='%d/%m/%y %H:%M:%S', imputeApproximal=FALSE, imputeOther=FALSE, freq=5, outlierthreshold=5, hypothreshold=NULL, hyperthreshold=NULL, save=FALSE, saveevents=FALSE, pregnancy=FALSE, diabetes=FALSE, mgdl=FALSE) {
 
 
 	if (device<0 | device>3) {
@@ -126,6 +126,13 @@ validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nigh
 		print(paste0("Day period start: ", format(dayPeriodStartTime, format='%H:%M')))
 	}
 
+	if (mgdl==TRUE) {
+		print("Glucose values assumed to be in mg/dL (mgdl arg is TRUE)")
+	}
+	else {
+		print("Glucose values assumed to be in mmol/L (mgdl arg is FALSE)")
+	}
+
 	# both thresholds need to be set or neither
 	if ((is.null(hypothreshold) & !is.null(hyperthreshold)) | (is.null(hyperthreshold) & !is.null(hypothreshold))) {
 		stop("Both hypo and hyper thresholds need to be set (or neither)", call.=FALSE)
@@ -135,20 +142,38 @@ validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nigh
 		# default settings for low and high thresholds
 
 		if (pregnancy == TRUE) {
-			hypothreshold = 3.5
-			hyperthreshold = 7.8
+			if (mgdl==TRUE) {
+				hypothreshold = 18*3.5
+                                hyperthreshold = 18*7.8
+			}
+			else {
+				hypothreshold = 3.5
+				hyperthreshold = 7.8
+			}
 			print(paste("Using pregnancy hypo-glycaemia threshold: ", hypothreshold, sep=""))
 	                print(paste("Using pregnancy hyper-glycaemia threshold: ", hyperthreshold, sep=""))
 		}
 		else if (diabetes == TRUE) {
-			hypothreshold = 3.9
-                        hyperthreshold = 10.0
+			if (mgdl==TRUE) {
+				hypothreshold = 18*3.9
+	                        hyperthreshold = 18*10.0
+			}
+			else {
+				hypothreshold = 3.9
+	                        hyperthreshold = 10.0
+			}
 			print(paste("Using diabetes hypo-glycaemia threshold: ", hypothreshold, sep=""))
                         print(paste("Using diabetes hyper-glycaemia threshold: ", hyperthreshold, sep=""))
 		}
 		else {
-			hypothreshold = 3.3
-                        hyperthreshold = 10.0
+			if (mgdl==TRUE) {
+				hypothreshold = 18*3.3
+	                        hyperthreshold = 18*10.0
+			}
+			else {
+				hypothreshold = 3.3
+	                        hyperthreshold = 10.0
+			}
 			print(paste("Using default hypo-glycaemia threshold: ", hypothreshold, sep=""))
                         print(paste("Using default hyper-glycaemia threshold: ", hyperthreshold, sep=""))
 		}
@@ -174,7 +199,7 @@ validateOptions <- function(indir, outdir=NULL, device=0, daystart='06:30', nigh
 	}
 
 
-	runSettings = methods::new("runSettings", indir=indir, outdir=outdir, device=device, timeformat=timeformat, imputeApproximal=imputeApproximal, imputeOther=imputeOther, epochfrequency=freq, hypothreshold=hypothreshold, hyperthreshold=hyperthreshold, nightstart=nightstart, daystart=daystart, outlierthreshold=outlierthreshold, dayPeriodStartTime=dayPeriodStartTime, firstvalid=firstvalid, save=save, saveevents=saveevents)
+	runSettings = methods::new("runSettings", indir=indir, outdir=outdir, device=device, timeformat=timeformat, imputeApproximal=imputeApproximal, imputeOther=imputeOther, epochfrequency=freq, hypothreshold=hypothreshold, hyperthreshold=hyperthreshold, nightstart=nightstart, daystart=daystart, outlierthreshold=outlierthreshold, dayPeriodStartTime=dayPeriodStartTime, firstvalid=firstvalid, save=save, saveevents=saveevents, mgdl=mgdl)
 	return(runSettings)
 
 }
