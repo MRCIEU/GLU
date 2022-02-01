@@ -87,7 +87,12 @@ getDays <- function(raw, rs) {
 		timePrev=rawData$time[idxPrev]
 		timeThis=rawData$time[idxThis]
 
-                if (timePrev >= timeThis) {
+		if (is.na(timeThis)) {
+			# data issue - no time so skip row
+			print('data row with no time, so skipping...')
+			next
+		}
+                else if (timePrev >= timeThis) {
                         # go to next time point until it is after the last time point
                         print('before last time point, probably clocks went back (skipping)...')
                         next
